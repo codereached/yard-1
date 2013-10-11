@@ -123,6 +123,10 @@ module YARD
       # @return [String, nil] source, if present, or nil
       attr_reader :source
 
+      # The AST node associated with the object.
+      # @return [Parser::Ruby::AstNode, nil] AST node, if present, or nil
+      attr_reader :ast_node
+
       # Language of the source code associated with the object. Defaults to
       # +:ruby+.
       #
@@ -360,6 +364,7 @@ module YARD
       #   as a +String+ for the definition of the code object only (not the block)
       def source=(statement)
         if statement.respond_to?(:source)
+          @ast_node = statement
           self.signature = statement.first_line
           @source = format_source(statement.source.strip)
         else
@@ -504,6 +509,16 @@ module YARD
           return if reg_obj && reg_obj.class == self.class
           @namespace.children << self unless @namespace.is_a?(Proxy)
           Registry.register(self)
+        end
+      end
+
+      def parent_module
+        if root?
+          self
+        elsif parent.is_a?(ModuleObject)
+          parent
+        elsif !parent.is_a?(Proxy)
+          parent.parent_module
         end
       end
 

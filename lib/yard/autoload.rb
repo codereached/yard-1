@@ -5,6 +5,7 @@ module YARD
   module CLI # Namespace for command-line interface components
     autoload :Command,         __p('cli/command')
     autoload :CommandParser,   __p('cli/command_parser')
+    autoload :Condense,        __p('cli/condense')
     autoload :Config,          __p('cli/config')
     autoload :Diff,            __p('cli/diff')
     autoload :Display,         __p('cli/display')
@@ -183,6 +184,7 @@ module YARD
   module Serializers # Namespace for components that serialize to various endpoints
     autoload :Base,                 __p('serializers/base')
     autoload :FileSystemSerializer, __p('serializers/file_system_serializer')
+    autoload :JSONSerializer,       __p('serializers/json_serializer')
     autoload :ProcessSerializer,    __p('serializers/process_serializer')
     autoload :StdoutSerializer,     __p('serializers/stdout_serializer')
     autoload :YardocSerializer,     __p('serializers/yardoc_serializer')

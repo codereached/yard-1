@@ -408,6 +408,7 @@ module YARD
           yield(object) if block_given?
           register_file_info(object)
           register_source(object)
+          register_ast_node(object)
           register_visibility(object)
           register_docstring(object)
           register_group(object)
@@ -499,6 +500,12 @@ module YARD
         return unless object.is_a?(MethodObject)
         object.source ||= source
         object.source_type = type
+      end
+
+      # @param [CodeObjects::Base] object the object to register
+      # @return [void]
+      def register_ast_node(object, ast_node = statement, type = parser.parser_type)
+        object.ast_node ||= ast_node
       end
 
       # Registers visibility on a method object. If the object does not
