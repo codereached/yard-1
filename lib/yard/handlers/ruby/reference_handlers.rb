@@ -59,13 +59,15 @@ module YARD::Handlers::Ruby::ReferenceHandlers
       recv = statement[0]
       parse_block(recv)
 
-      recv_object = YARD::Registry.resolve(namespace, recv.path.join(NSEP))
-      if recv_object && recv_object.is_a?(NamespaceObject)
-        method_name = statement.method_name(true)
-        method_name = statement[1] == "." ? "##{method_name}" : method_name
-        target = YARD::Registry.resolve(recv_object, method_name, true, true)
-        if target
-          add_reference Reference.new(target, statement.method_name)
+      if recv.respond_to?(:path)
+        recv_object = YARD::Registry.resolve(namespace, recv.path.join(NSEP))
+        if recv_object && recv_object.is_a?(NamespaceObject)
+          method_name = statement.method_name(true)
+          method_name = statement[1] == "." ? "##{method_name}" : method_name
+          target = YARD::Registry.resolve(recv_object, method_name, true, true)
+          if target
+            add_reference Reference.new(target, statement.method_name)
+          end
         end
       end
     end
