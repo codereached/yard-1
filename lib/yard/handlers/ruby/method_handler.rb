@@ -66,7 +66,12 @@ class YARD::Handlers::Ruby::MethodHandler < YARD::Handlers::Ruby::Base
       end
     end
 
-    parse_block(blk, :owner => obj) # mainly for yield/exceptions
+    block_self_binding = if scope == :class || mscope == :class
+                           :class
+                           else
+                           :instance
+                         end
+    parse_block(blk, :owner => obj, :self_binding => block_self_binding) # mainly for yield/exceptions
   end
 
   def format_args

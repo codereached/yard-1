@@ -49,6 +49,9 @@ module YARD
       # @return [Symbol] the current scope (class, instance)
       attr_accessor :scope
 
+      # @return [Symbol] the current self binding (class, instance)
+      attr_accessor :self_binding
+
       # @return [CodeObjects::Base, nil] unlike the namespace, the owner
       #   is a non-namespace object that should be stored between statements.
       #   For instance, when parsing a method body, the {CodeObjects::MethodObject}
@@ -94,6 +97,7 @@ module YARD
         @namespace = YARD::Registry.root
         @visibility = :public
         @scope = :instance
+        @self_binding = :instance
         @owner = @namespace
         @parser_type = parser.parser_type
         @handlers_loaded = {}
@@ -116,10 +120,10 @@ module YARD
               log.debug "#{handler.to_s} cancelled from #{caller.last}"
               log.debug "\tin file '#{file}':#{stmt.line}:\n\n" + stmt.show + "\n"
             rescue NamespaceMissingError => missingerr
-              log.warn "The #{missingerr.object.type} #{missingerr.object.path} has not yet been recognized."
-              log.warn "If this class/method is part of your source tree, this will affect your documentation results."
-              log.warn "You can correct this issue by loading the source file for this object before `#{file}'"
-              log.warn
+              # log.warn "The #{missingerr.object.type} #{missingerr.object.path} has not yet been recognized."
+              # log.warn "If this class/method is part of your source tree, this will affect your documentation results."
+              # log.warn "You can correct this issue by loading the source file for this object before `#{file}'"
+              # log.warn
             rescue Parser::UndocumentableError => undocerr
               log.warn "in #{handler.to_s}: Undocumentable #{undocerr.message}"
               log.warn "\tin file '#{file}':#{stmt.line}:\n\n" + stmt.show + "\n"

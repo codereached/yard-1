@@ -76,4 +76,28 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
       Registry.references_to("C1.my_class_method").length.should == 3
     end
   end
+
+  describe "methods and class methods" do
+    before(:all) { parse_file :reference_handler_004, __FILE__ }
+
+    it "should get 27 references to C1" do
+      Registry.references_to("C1").length.should == 27
+    end
+
+    it "should get 3 references to C1#m1" do
+      Registry.references_to("C1#m1").length.should == 3
+    end
+
+    it "should get 3 references to C1#m2" do
+      Registry.references_to("C1#m2").length.should == 3
+    end
+
+    it "should get 12 references to C1.cm1" do
+      Registry.references_to("C1.cm1").length.should == 12
+    end
+
+    it "should get 18 references to C1.cm2" do
+      Registry.references_to("C1.cm2").length.should == 18
+    end
+  end
 end

@@ -325,6 +325,9 @@ module YARD
       # (see Processor#scope)
       attr_accessor :scope
 
+      # (see Processor#self_binding)
+      attr_accessor :self_binding
+
       # (see Processor#globals)
       attr_reader :globals
 
@@ -343,6 +346,8 @@ module YARD
       def visibility=(v); parser.visibility=(v) end
       def scope; parser.scope end
       def scope=(v); parser.scope=(v) end
+      def self_binding; parser.self_binding end
+      def self_binding=(v); parser.self_binding=(v) end
       def globals; parser.globals end
       def extra_state; parser.extra_state end
 
@@ -356,7 +361,7 @@ module YARD
       end
 
       # Executes a given block with specific state values for {#owner},
-      # {#namespace} and {#scope}.
+      # {#namespace}, {#self_binding} and {#scope}.
       #
       # @param [Proc] block the block to execute with specific state
       # @option opts [CodeObjects::NamespaceObject] :namespace (value of #namespace)
@@ -364,6 +369,8 @@ module YARD
       #   duration of the block.
       # @option opts [Symbol] :scope (:instance)
       #   the scope for the duration of the block.
+      # @option opts [Symbol] :self_binding (:instance)
+      #   the self binding for the duration of the block.
       # @option opts [CodeObjects::Base] :owner (value of #owner)
       #   the owner object (method) for the duration of the block
       # @yield a block to execute with the given state values.
@@ -371,14 +378,16 @@ module YARD
         opts = {
           :namespace => namespace,
           :scope => :instance,
+          :self_binding => :instance,
           :owner => owner || namespace,
           :visibility => nil
         }.update(opts)
 
-        ns, vis, sc, oo = namespace, visibility, scope, owner
+        ns, vis, sc, sb, oo = namespace, visibility, scope, self_binding, owner
         self.namespace = opts[:namespace]
         self.visibility = opts[:visibility] || :public
         self.scope = opts[:scope]
+        self.self_binding = opts[:self_binding]
         self.owner = opts[:owner]
 
         yield
@@ -386,6 +395,7 @@ module YARD
         self.namespace = ns
         self.visibility = vis
         self.scope = sc
+        self.self_binding = sb
         self.owner = oo
       end
 

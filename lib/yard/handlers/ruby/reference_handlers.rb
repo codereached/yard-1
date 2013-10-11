@@ -6,7 +6,13 @@ module YARD::Handlers::Ruby::ReferenceHandlers
     process do
       name_node = statement[0]
       name = name_node[0]
-      target = YARD::Registry.resolve(namespace, name)
+
+      target = if name_node.type == :kw && name_node[0] == 'self'
+        namespace
+      else
+        YARD::Registry.resolve(namespace, name, false, false)
+      end
+
       if target
         add_reference Reference.new(target, statement)
       end
@@ -19,7 +25,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
     process do
       name_node = statement[0]
       name = name_node[0]
-      target = YARD::Registry.resolve(namespace, NSEP+name)
+      target = YARD::Registry.resolve(namespace, NSEP+name, false, true)
       if target
         add_reference Reference.new(target, statement)
       end
@@ -52,6 +58,21 @@ module YARD::Handlers::Ruby::ReferenceHandlers
     end
   end
 
+
+  class MethodDefsRefHandler < YARD::Handlers::Ruby::Base
+    handles :defs
+
+    process do
+      recv = statement[0]
+      nobj = namespace
+
+      if recv[0].type != :ident
+        nobj = P(namespace, recv.source) if recv[0].type == :const
+        add_reference Reference.new(nobj, recv)
+      end
+    end
+  end
+
   class CallRefHandler < YARD::Handlers::Ruby::Base
     handles :call
 
@@ -59,23 +80,41 @@ module YARD::Handlers::Ruby::ReferenceHandlers
       recv = statement[0]
       parse_block(recv)
 
-      if recv.respond_to?(:path)
+      next unless recv.ref?
+
+      if recv[0].type == :kw && recv[0][0] == "self"
+        recv_object = namespace
+        meth_type = self.self_binding
+      elsif recv.respond_to?(:path)
         recv_object = YARD::Registry.resolve(namespace, recv.path.join(NSEP))
-        if recv_object && recv_object.is_a?(NamespaceObject)
-          method_name = statement.method_name(true)
-          method_name = statement[1] == "." ? "##{method_name}" : method_name
-          target = YARD::Registry.resolve(recv_object, method_name, true, true)
-          if target
-            add_reference Reference.new(target, statement.method_name)
-          end
-        end
+        meth_type = :class # no type inference yet, so can't get instance methods
+      end
+      if recv_object && recv_object.is_a?(NamespaceObject)
+        method_name = statement.method_name(true)
+        method_name = meth_type == :instance ? "##{method_name}" : ".#{method_name}"
+        target = YARD::Registry.resolve(recv_object, method_name, true, true)
+        add_reference Reference.new(target, statement.method_name)
+      end
+    end
+  end
+
+  class VFCallRefHandler < YARD::Handlers::Ruby::Base
+    handles :vcall, :fcall
+
+    process do
+      name_node = statement[0]
+      if name_node.type == :ident
+        method_name = name_node[0]
+        method_name = self_binding == :instance ? "##{method_name}" : ".#{method_name}"
+        method_object = YARD::Registry.resolve(namespace, method_name, true, true)
+        add_reference Reference.new(method_object, name_node)
       end
     end
   end
 
   # NodeTraverser traverses through AST nodes that do not affect the namespace.
   class NodeTraverser < YARD::Handlers::Ruby::Base
-    handles :command
+    handles :command, :method_add_arg
 
     process do
       statement.each do |st|

@@ -180,6 +180,7 @@ module YARD
       def add_reference(ref)
         @references ||= {}
         @references[ref.target.path] ||= []
+        ensure_ref_unique(ref)
         @references[ref.target.path] << ref
       end
 
@@ -192,6 +193,14 @@ module YARD
         @references[target] || []
       end
 
+      def ensure_ref_unique(ref)
+        @references.values.flatten.each do |r|
+          if r.ast_node == ref.ast_node && r.ast_node.file == ref.ast_node.file && r.ast_node.source_range == ref.ast_node.source_range
+            raise "2 refs with same AST node: #{r.inspect} #{ref.inspect}"
+          end
+        end
+      end
+
       # Deletes an object from the registry
       # @param [CodeObjects::Base] object the object to remove
       # @return [void]
@@ -202,6 +211,7 @@ module YARD
       # Clears the registry
       # @return [void]
       def clear
+        @references = {}
         self.thread_local_store = RegistryStore.new
       end
 
