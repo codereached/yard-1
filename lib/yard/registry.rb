@@ -177,6 +177,21 @@ module YARD
         thread_local_store[object.path] = object
       end
 
+      def add_reference(ref)
+        @references ||= {}
+        @references[ref.target.path] ||= []
+        @references[ref.target.path] << ref
+      end
+
+      attr_reader :references
+
+      def references_to(target)
+        if target.is_a?(CodeObjects::Base)
+          target = target.path
+        end
+        @references[target] || []
+      end
+
       # Deletes an object from the registry
       # @param [CodeObjects::Base] object the object to remove
       # @return [void]

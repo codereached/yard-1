@@ -21,9 +21,7 @@ module YARD
       def run(*args)
         return unless parse_arguments(*args)
         @serializer.before_serialize
-        Registry.each do |obj|
-          @serializer.serialize(obj)
-        end
+        @serializer.serialize({objects: Registry.all, references: Registry.references})
         @serializer.after_serialize
       end
 

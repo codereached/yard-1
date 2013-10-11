@@ -40,6 +40,7 @@ module YARD
     autoload :NamespaceObject,      __p('code_objects/namespace_object')
     autoload :Proxy,                __p('code_objects/proxy')
     autoload :ProxyMethodError,     __p('code_objects/proxy')
+    autoload :Reference,            __p('code_objects/reference')
     autoload :RootObject,           __p('code_objects/root_object')
 
     autoload :BUILTIN_ALL,          __p('code_objects/base')
@@ -124,6 +125,7 @@ module YARD
       autoload :ModuleHandler,            __p('handlers/ruby/module_handler')
       autoload :ModuleFunctionHandler,    __p('handlers/ruby/module_function_handler')
       autoload :PrivateConstantHandler,   __p('handlers/ruby/private_constant_handler')
+      autoload :ReferenceHandlers,        __p('handlers/ruby/reference_handlers')
       autoload :StructHandlerMethods,     __p('handlers/ruby/struct_handler_methods')
       autoload :VisibilityHandler,        __p('handlers/ruby/visibility_handler')
       autoload :YieldHandler,             __p('handlers/ruby/yield_handler')
