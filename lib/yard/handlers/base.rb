@@ -420,7 +420,7 @@ module YARD
 
       def add_reference(*refs)
         refs.flatten.each do |ref|
-          next unless ref.is_a?(CodeObjects::Reference)
+          next unless ref.is_a?(CodeObjects::Reference) || ref.is_a?(CodeObjects::Proxy)
           ensure_loaded!(ref.target)
           yield(object) if block_given?
         end

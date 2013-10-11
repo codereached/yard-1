@@ -35,7 +35,7 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
       refs[1].ast_node.source.should == "B"
       refs[1].ast_node.source_range.should == (38..38)
     end
-  end if false
+  end
 
   describe "nested modules" do
     before(:all) { parse_file :reference_handler_002, __FILE__ }
@@ -62,6 +62,18 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
 
     it "should get 1 reference to M1::M3::C3" do
       Registry.references_to("M1::M3::C3").length.should == 1
+    end
+  end
+
+  describe "with `class << self` usage" do
+    before(:all) { parse_file :reference_handler_003, __FILE__ }
+
+    it "should get 5 references to C1" do
+      Registry.references_to("C1").length.should == 5
+    end
+
+    it "should get 3 references to C1.my_class_method" do
+      Registry.references_to("C1.my_class_method").length.should == 3
     end
   end
 end
