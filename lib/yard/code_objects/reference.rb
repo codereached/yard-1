@@ -1,7 +1,7 @@
 module YARD::CodeObjects
   class Reference
     def initialize(target, ast_node)
-      raise ArgumentError, "invalid target type" unless target.is_a?(Base)
+      raise ArgumentError, "invalid target type #{target.class}" unless target.is_a?(Base) || target.is_a?(Proxy)
       raise ArgumentError, "invalid AST node type" unless ast_node.is_a?(YARD::Parser::Ruby::AstNode)
 
       @target = target
