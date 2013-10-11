@@ -1,6 +1,8 @@
 module YARD::CodeObjects
   # Represents a Ruby module.
   class ModuleObject < NamespaceObject
+    include Scope
+
     # Returns the inheritance tree of mixins.
     #
     # @param [Boolean] include_mods if true, will include mixed in

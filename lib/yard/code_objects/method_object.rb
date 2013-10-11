@@ -1,6 +1,8 @@
 module YARD::CodeObjects
   # Represents a Ruby method in source
   class MethodObject < Base
+    include Scope
+
     # The scope of the method (+:class+ or +:instance+)
     #
     # @return [Symbol] the scope
