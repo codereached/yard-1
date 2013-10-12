@@ -104,8 +104,6 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
   describe "local vars" do
     before(:all) { parse_file :reference_handler_005_local_vars, __FILE__ }
 
-    # TODO(sqs): get the local var defined in the "class << self" block
-
     {
       "file:spec/handlers/examples/reference_handler_005_local_vars.rb.txt_local_0>v" => 1,
       "file:spec/handlers/examples/reference_handler_005_local_vars.rb.txt_local_0>#m1>v" => 1,
