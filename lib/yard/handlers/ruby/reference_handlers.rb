@@ -10,7 +10,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
       target = if name_node.type == :kw && name_node[0] == 'self'
         namespace
       else
-        YARD::Registry.resolve(namespace, name, false, false)
+        local_scope.resolve(name) || YARD::Registry.resolve(namespace, name, false, false)
       end
 
       if target

@@ -6,7 +6,6 @@ module YARD::CodeObjects
     #
     # @see Base.new
     def initialize(local_scope, name, ast_node, *args, &block)
-      puts "Local var #{ast_node.source}"
       self.ast_node = ast_node
       @local_scope = local_scope
       super(local_scope, name, *args, &block)

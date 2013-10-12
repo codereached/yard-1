@@ -100,4 +100,26 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
       Registry.references_to("C1.cm2").length.should == 18
     end
   end
+
+  describe "local vars" do
+    before(:all) { parse_file :reference_handler_005_local_vars, __FILE__ }
+
+    # TODO(sqs): get the local var defined in the "class << self" block
+
+    {
+      "file:spec/handlers/examples/reference_handler_005_local_vars.rb.txt_local_0>v" => 1,
+      "file:spec/handlers/examples/reference_handler_005_local_vars.rb.txt_local_0>#m1>v" => 1,
+      "M1>_local_0>v" => 1,
+      "M1::C1>_local_0>v" => 1,
+      "M1::C1>_local_0>#cim1>v" => 1,
+      "M1::C1>_local_0>cm1>v" => 1,
+      "M1::C1>_local_0><< self_local_1>v" => 1,
+      "M1>_local_0>#mm1>v" => 1,
+      "M1>_local_0>#mm1>#subm1>v" => 1,
+    }.each do |path, num_refs|
+      it "should get #{num_refs} reference to #{path}" do
+        Registry.references_to(path).length.should == num_refs
+      end
+    end
+  end
 end

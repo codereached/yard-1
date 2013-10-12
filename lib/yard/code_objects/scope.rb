@@ -40,5 +40,11 @@ module YARD::CodeObjects
     attr_reader :name
     attr_reader :parent
     attr_reader :children
+
+    def resolve(target)
+      children.find do |c|
+        c.name.to_s == target.to_s
+      end || (parent && parent.resolve(target))
+    end
   end
 end
