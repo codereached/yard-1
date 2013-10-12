@@ -44,7 +44,7 @@ module YARD::CodeObjects
     def resolve(target)
       children.find do |c|
         c.name.to_s == target.to_s
-      end || (parent && parent.resolve(target))
+      end || (parent.respond_to?(:resolve) && parent.resolve(target))
     end
   end
 end
