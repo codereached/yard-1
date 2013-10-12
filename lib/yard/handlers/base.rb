@@ -316,6 +316,8 @@ module YARD
       # (see Processor#owner)
       attr_accessor :owner
 
+      attr_accessor :local_scope
+
       # (see Processor#namespace)
       attr_accessor :namespace
 
@@ -335,11 +337,14 @@ module YARD
       attr_reader :extra_state
 
       undef owner, owner=, namespace, namespace=
+      undef local_scope, local_scope=
       undef visibility, visibility=, scope, scope=
       undef globals, extra_state
 
       def owner; parser.owner end
       def owner=(v) parser.owner=(v) end
+      def local_scope; parser.local_scope end
+      def local_scope=(v) parser.local_scope=(v) end
       def namespace; parser.namespace end
       def namespace=(v); parser.namespace=(v) end
       def visibility; parser.visibility end
@@ -380,15 +385,17 @@ module YARD
           :scope => :instance,
           :self_binding => :instance,
           :owner => owner || namespace,
+          :local_scope => local_scope,
           :visibility => nil
         }.update(opts)
 
-        ns, vis, sc, sb, oo = namespace, visibility, scope, self_binding, owner
+        ns, vis, sc, sb, oo, ls = namespace, visibility, scope, self_binding, owner, local_scope
         self.namespace = opts[:namespace]
         self.visibility = opts[:visibility] || :public
         self.scope = opts[:scope]
         self.self_binding = opts[:self_binding]
         self.owner = opts[:owner]
+        self.local_scope = opts[:local_scope]
 
         yield
 
@@ -397,6 +404,7 @@ module YARD
         self.scope = sc
         self.self_binding = sb
         self.owner = oo
+        self.local_scope = ls
       end
 
       # Do some post processing on a list of code objects.

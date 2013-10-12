@@ -1,12 +1,12 @@
 module YARD::CodeObjects
   # Represents a Ruby method in source
   class MethodObject < Base
-    include Scope
-
     # The scope of the method (+:class+ or +:instance+)
     #
     # @return [Symbol] the scope
     attr_reader :scope
+
+    attr_reader :local_scope
 
     # Whether the object is explicitly defined in source or whether it was
     # inferred by a handler. For instance, attribute methods are generally
@@ -38,7 +38,7 @@ module YARD::CodeObjects
 
       # handle module function
       if scope == :module
-        other = self.class.new(namespace, name, &block)
+        other = self.class.new(namespace, local_scope, name, &block)
         other.visibility = :private
         scope = :class
         @module_function = true
@@ -58,7 +58,7 @@ module YARD::CodeObjects
 
       # handle module function
       if v == :module
-        other = self.class.new(namespace, name)
+        other = self.class.new(namespace, local_scope, name)
         other.visibility = :private
         @visibility = :public
         @module_function = true

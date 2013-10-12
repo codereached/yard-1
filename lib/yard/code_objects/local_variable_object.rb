@@ -2,14 +2,14 @@ module YARD::CodeObjects
   # Represents a local variable inside a scope. The path is expressed
   # in the form TODO!(sqs)
   class LocalVariableObject < Base
-    # Creates a new local variable object in +namespace+ with +name+, in the
-    # scope of +owner+.
+    # Creates a new local variable object in +local_scope+ with +name+.
     #
     # @see Base.new
-    def initialize(namespace, name, owner, ast_node, *args, &block)
-      self.owner = owner
+    def initialize(local_scope, name, ast_node, *args, &block)
+      puts "Local var #{ast_node.source}"
       self.ast_node = ast_node
-      super(namespace, name, *args, &block)
+      @local_scope = local_scope
+      super(local_scope, name, *args, &block)
     end
 
     # @return [String] the local variable's assigned value
@@ -17,11 +17,14 @@ module YARD::CodeObjects
 
     # @return [CodeObjects::Base] the object that creates this local variable's
     # enclosing scope
-    attr_accessor :owner
+    attr_accessor :local_scope
 
-    # override to include "owner" in path string
-    def path
-      "#{owner.root? ? '' : owner.path}>#{name}:#{owner.next_scope_entry_id}"
+    def name(prefix = false)
+      prefix ? "#{sep}#{super}" : super
+    end
+
+    def sep
+      ">"
     end
   end
 end

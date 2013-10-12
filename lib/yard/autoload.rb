@@ -43,7 +43,8 @@ module YARD
     autoload :ProxyMethodError,     __p('code_objects/proxy')
     autoload :Reference,            __p('code_objects/reference')
     autoload :RootObject,           __p('code_objects/root_object')
-    autoload :Scope,                __p('code_objects/scope')
+    autoload :LocalScope,           __p('code_objects/scope')
+    autoload :MultipleLocalScopes,  __p('code_objects/scope')
 
     autoload :BUILTIN_ALL,          __p('code_objects/base')
     autoload :BUILTIN_CLASSES,      __p('code_objects/base')

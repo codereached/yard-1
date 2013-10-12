@@ -49,6 +49,8 @@ module YARD
       # @return [Symbol] the current scope (class, instance)
       attr_accessor :scope
 
+      attr_accessor :local_scope
+
       # @return [Symbol] the current self binding (class, instance)
       attr_accessor :self_binding
 
@@ -99,6 +101,8 @@ module YARD
         @scope = :instance
         @self_binding = :instance
         @owner = @namespace
+        relfile = Pathname.new(@file).relative_path_from(Pathname.getwd).to_s
+        @local_scope = @namespace.new_local_scope("file:#{relfile}")
         @parser_type = parser.parser_type
         @handlers_loaded = {}
         @globals = parser.globals || OpenStruct.new

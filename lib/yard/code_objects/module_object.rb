@@ -1,7 +1,7 @@
 module YARD::CodeObjects
   # Represents a Ruby module.
   class ModuleObject < NamespaceObject
-    include Scope
+    include MultipleLocalScopes
 
     # Returns the inheritance tree of mixins.
     #

@@ -2,7 +2,7 @@ module YARD::CodeObjects
   # A ClassObject represents a Ruby class in source code. It is a {ModuleObject}
   # with extra inheritance semantics through the superclass.
   class ClassObject < NamespaceObject
-    include Scope
+    include MultipleLocalScopes
 
     # The {ClassObject} that this class object inherits from in Ruby source.
     # @return [ClassObject] a class object that is the superclass of this one

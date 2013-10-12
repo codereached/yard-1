@@ -71,7 +71,7 @@ class YARD::Handlers::Ruby::MethodHandler < YARD::Handlers::Ruby::Base
                            else
                            :instance
                          end
-    parse_block(blk, :owner => obj, :self_binding => block_self_binding) # mainly for yield/exceptions
+    parse_block(blk, :owner => obj, :self_binding => block_self_binding, :local_scope => LocalScope.new(obj.name(true), local_scope)) # mainly for yield/exceptions
   end
 
   def format_args

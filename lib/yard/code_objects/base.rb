@@ -215,7 +215,7 @@ module YARD
       # @return [Base] the newly created object
       def initialize(namespace, name, *args, &block)
         if namespace && namespace != :root &&
-            !namespace.is_a?(NamespaceObject) && !namespace.is_a?(Proxy)
+            !namespace.is_a?(NamespaceObject) && !namespace.is_a?(LocalScope) && !namespace.is_a?(Proxy)
           raise ArgumentError, "Invalid namespace object: #{namespace}"
         end
 
