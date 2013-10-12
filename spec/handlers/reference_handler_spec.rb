@@ -120,4 +120,16 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
       end
     end
   end
+
+  describe "traversing AST to get refs" do
+    before(:all) { parse_file :reference_handler_006_traverse, __FILE__ }
+
+    {
+      "M" => 57,
+    }.each do |path, num_refs|
+      it "should get #{num_refs} reference to #{path}" do
+        Registry.references_to(path).length.should == num_refs
+      end
+    end
+  end
 end

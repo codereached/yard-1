@@ -102,7 +102,7 @@ module YARD
         @self_binding = :instance
         @owner = @namespace
         relfile = Pathname.new(@file).relative_path_from(Pathname.getwd).to_s
-        @local_scope = @namespace.new_local_scope("file:#{relfile}")
+        @local_scope = @namespace.new_local_scope("file:#{relfile}", @namespace)
         @parser_type = parser.parser_type
         @handlers_loaded = {}
         @globals = parser.globals || OpenStruct.new

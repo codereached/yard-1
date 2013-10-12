@@ -22,6 +22,8 @@ module YARD::CodeObjects
 
     def root?; false end
     def has_tag?(_); false end
+    def tag(name); end
+    def tags(name = nil); end
 
     def path
       @path ||= if parent && !parent.root?
@@ -35,6 +37,16 @@ module YARD::CodeObjects
 
     def name(prefix = false)
       prefix ? "#{sep}#{super}" : super
+    end
+
+    def parent_module
+      if !parent
+        nil
+      elsif parent.is_a?(ModuleObject)
+        parent
+      else
+        parent.parent_module
+      end
     end
 
     attr_reader :name

@@ -180,8 +180,9 @@ module YARD
       def add_reference(ref)
         @references ||= {}
         @references[ref.target.path] ||= []
-        ensure_ref_unique(ref)
-        @references[ref.target.path] << ref
+        if ensure_ref_unique(ref)
+          @references[ref.target.path] << ref
+        end
       end
 
       attr_reader :references
@@ -193,12 +194,16 @@ module YARD
         @references[target] || []
       end
 
-      def ensure_ref_unique(ref)
+      def ensure_ref_unique(ref, should_raise=false)
         @references.values.flatten.each do |r|
           if r.ast_node == ref.ast_node && r.ast_node.file == ref.ast_node.file && r.ast_node.source_range == ref.ast_node.source_range
-            raise "2 refs with same AST node: #{r.inspect} #{ref.inspect}"
+            if should_raise
+              raise "2 refs with same AST node: #{r.inspect} #{ref.inspect} (source range: #{r.ast_node.source_range} #{ref.ast_node.source_range})"
+            end
+            return false
           end
         end
+        return true
       end
 
       # Deletes an object from the registry

@@ -14,7 +14,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
       end
 
       if target
-        add_reference Reference.new(target, statement)
+        add_reference Reference.new(target, name_node)
       end
     end
   end
@@ -102,6 +102,8 @@ module YARD::Handlers::Ruby::ReferenceHandlers
     handles :vcall, :fcall
 
     process do
+      parse_block(statement[1])
+
       name_node = statement[0]
       if name_node.type == :ident
         method_name = name_node[0]
@@ -114,11 +116,13 @@ module YARD::Handlers::Ruby::ReferenceHandlers
 
   # NodeTraverser traverses through AST nodes that do not affect the namespace.
   class NodeTraverser < YARD::Handlers::Ruby::Base
-    handles :command, :method_add_arg
+    def self.handles?(node)
+      [:list, :params, :list, :command, :command_call, :method_add_arg, :args_add_block, :arg_paren, :paren, :next].include?(node.type) || node.type.to_s.end_with?('_mod', '_literal') || node.class == AstNode || node.class == KeywordNode || node.class == ConditionalNode || node.class == LoopNode || node.class == ParameterNode
+    end
 
     process do
       statement.each do |st|
-        parse_block(st)
+        parse_block(st) if st.respond_to?(:type)
       end
     end
   end
