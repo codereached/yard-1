@@ -21,8 +21,17 @@ describe "YARD::Handlers::Ruby::LocalVariableHandler" do
     obj.rhs.source.should == '"in class"'
   end
 
+  it "should parse local variables inside singleton classes" do
+    # TODO!(sqs): give local vars in singleton classes a path denoting that they
+    # are in the singleton class (since otherwise they could collide with local
+    # vars defined in the non-singleton class)
+    obj = Registry.at("A::B>somevar:6")
+    obj.source.should == "somevar = \"in singleton class\""
+    obj.rhs.source.should == '"in singleton class"'
+  end
+
   it "should parse local variables inside methods" do
-    obj = Registry.at("A::B#method>somevar:3")
+    obj = Registry.at("A::B#method>somevar:4")
     obj.source.should == "somevar = \"in method\""
     obj.rhs.source.should == '"in method"'
   end

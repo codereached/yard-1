@@ -30,7 +30,7 @@ class YARD::Handlers::Ruby::ClassHandler < YARD::Handlers::Ruby::Base
       end
     elsif statement.type == :sclass
       if statement[0] == s(:var_ref, s(:kw, "self"))
-        parse_block(statement[1], :namespace => namespace, :scope => :class, :self_binding => :class, :owner => klass)
+        parse_block(statement[1], :namespace => namespace, :scope => :class, :self_binding => :class, :owner => namespace)
       else
         proxy = Proxy.new(namespace, classname)
 
@@ -45,7 +45,7 @@ class YARD::Handlers::Ruby::ClassHandler < YARD::Handlers::Ruby::Base
 
         if classname[0,1] =~ /[A-Z]/
           register ClassObject.new(namespace, classname) if Proxy === proxy
-          parse_block(statement[1], :namespace => proxy, :scope => :class, :owner => klass)
+          parse_block(statement[1], :namespace => proxy, :scope => :class, :owner => namespace)
         else
           raise YARD::Parser::UndocumentableError, "class '#{classname}'"
         end
