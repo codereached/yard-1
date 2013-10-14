@@ -125,7 +125,6 @@ module YARD::TypeInference
                end
       av = YARD::Registry.abstract_value_for_ast_node(ast_node, false)
       ref_av.propagate(av)
-      puts "VAR_REF FOR #{ast_node.inspect}"
       av
     end
 
