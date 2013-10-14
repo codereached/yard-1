@@ -125,6 +125,7 @@ module YARD::TypeInference
                end
       av = YARD::Registry.abstract_value_for_ast_node(ast_node, false)
       ref_av.propagate(av)
+      puts "VAR_REF FOR #{ast_node.inspect}"
       av
     end
 
@@ -166,11 +167,13 @@ module YARD::TypeInference
         if method_obj
           mtype = Type.from_object(method_obj)
           method_av = process_ast_node(method_obj.ast_node)
-        end
 
-        # we've found a new reference thanks to type inference, so add it to Registry.references
-        # TODO(sqs): add a spec that tests that we add it to Registry.references
-        YARD::Registry.add_reference(YARD::CodeObjects::Reference.new(method_obj, ast_node[2]))
+          # attr_writer we've found a new reference thanks to type inference, so add it to Registry.references
+          # TODO(sqs): add a spec that tests that we add it to Registry.references
+          YARD::Registry.add_reference(YARD::CodeObjects::Reference.new(method_obj, ast_node[2]))
+        else
+          log.warn "Couldn't find method_obj for method #{method_name.inspect} in recv #{ast_node[0].inspect}"
+        end
       end
 
       if method_av
