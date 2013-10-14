@@ -12,4 +12,8 @@ describe "YARD::TypeInference::Processor" do
   describe "instantiation" do
     check_file_inline_type_annotations(:inferencer_003_instantiation, __FILE__)
   end
+
+  describe "circular" do
+    check_file_inline_type_annotations(:inferencer_004_circular, __FILE__)
+  end
 end

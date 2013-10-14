@@ -9,12 +9,19 @@ module YARD::Handlers::Ruby::ReferenceHandlers
 
       target = if name_node.type == :kw && name_node[0] == 'self'
         namespace
+      elsif name_node.type == :ivar
+        name2 = self_binding == :class ? "@#{name.sub('@', '')}" : "##{name}"
+        YARD::Registry.resolve(namespace, name2, true, true)
+      elsif name_node.type == :cvar
+        YARD::Registry.resolve(namespace, "#{name.sub('@', '')}", true, true)
       else
         local_scope.resolve(name) || YARD::Registry.resolve(namespace, name, false, false)
       end
 
       if target
         add_reference Reference.new(target, name_node)
+      else
+        log.warn("No reference target found for name_node #{name_node.inspect}")
       end
     end
   end

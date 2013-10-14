@@ -73,7 +73,7 @@ module YARD
 
         # @return [String] the filename the node was parsed from
         def file
-          return parent.file if parent
+          return parent.file if parent && parent != self
           @file
         end
 

@@ -1,5 +1,10 @@
 module YARD::TypeInference
   class Processor
+    def initialize
+      @started = {}
+      @memo = {}
+    end
+
     def process_ast_list(ast)
       ast.map do |ast_node|
         process_ast_node(ast_node)
@@ -10,9 +15,21 @@ module YARD::TypeInference
 
     def process_ast_node(ast_node)
       raise ArgumentError, "invalid ast node: #{ast_node}" unless ast_node.is_a?(YARD::Parser::Ruby::AstNode)
+
+      # handle circular refs
+      if @started[ast_node] && !@memo.include?(ast_node)
+        return Registry.abstract_value_for_ast_node(ast_node, false)
+      end
+
+      if @memo.include?(ast_node)
+        return @memo[ast_node]
+      end
+
+      @started[ast_node] = true
+
       method_name = "process_#{ast_node.type}"
       if respond_to?(method_name)
-        send(method_name, ast_node)
+        @memo[ast_node] = send(method_name, ast_node)
       else
         raise ArgumentError, "no #{method_name} processor method"
       end
@@ -35,6 +52,12 @@ module YARD::TypeInference
       nil
     end
 
+    def process_module(ast_node)
+      bodystmt = ast_node[1]
+      process_ast_node(bodystmt)
+      nil
+    end
+
     def process_def(ast_node)
       method_obj = Registry.get_object_for_ast_node(ast_node)
       method_type = Type.from_object(method_obj)
@@ -51,6 +74,12 @@ module YARD::TypeInference
       body_av = process_ast_node(ast_node[4]) # def body
       body_av.propagate(method_type.return_type)
       AbstractValue.single_type_nonconst(method_type)
+    end
+
+    def process_const_path_ref(ast_node)
+      ast_node.map do |n|
+        process_ast_node(n)
+      end.last
     end
 
     def process_ident(ast_node)
@@ -72,7 +101,7 @@ module YARD::TypeInference
     end
 
     def process_ivar(ast_node)
-      # TODO
+      Registry.abstract_value(ast_node)
     end
 
     def process_kw(ast_node)
