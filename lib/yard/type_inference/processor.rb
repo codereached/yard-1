@@ -58,10 +58,7 @@ module YARD::TypeInference
       obj = Registry.get_object_for_ast_node(ast_node)
       if obj.is_a?(CodeObjects::MethodObject)
         method_av = process_ast_node(obj.ast_node)
-        puts "WARN: no types for method_av for #{ast_node.inspect}" if method_av.types.empty?
         method_av.propagate(av)
-      else
-        puts "WARN: no obj for AST ident #{ast_node.inspect}"
       end
       av
     end
@@ -158,7 +155,6 @@ module YARD::TypeInference
 
       method_av = process_ast_node(ast_node[0])
       method_av.types.each do |mtype|
-        puts "#{mtype.return_type.type_string} PROPAGATE `#{av.type_string}`"
         mtype.return_type.propagate(av)
       end
 
