@@ -14,9 +14,9 @@ module YARD::TypeInference
 
     class << self
       def from_object(obj)
-        if obj.is_a?(CodeObjects::ClassObject)
+        if obj.is_a?(YARD::CodeObjects::ClassObject)
           ClassType.new(obj)
-        elsif obj.is_a?(CodeObjects::MethodObject)
+        elsif obj.is_a?(YARD::CodeObjects::MethodObject)
           MethodType.new(obj.namespace, obj.scope, obj.name, obj)
         else
           raise ArgumentError, "invalid obj: #{obj.inspect} (#{obj.type})"
@@ -50,7 +50,7 @@ module YARD::TypeInference
 
   class MethodType < Type
     def initialize(namespace, method_scope, method_name, method_obj)
-      raise ArgumentError, "invalid namespace: #{namespace}" if namespace && !namespace.is_a?(CodeObjects::NamespaceObject)
+      raise ArgumentError, "invalid namespace: #{namespace}" if namespace && !namespace.is_a?(YARD::CodeObjects::NamespaceObject)
       @namespace = namespace
       @method_scope = method_scope
       @method_name = method_name

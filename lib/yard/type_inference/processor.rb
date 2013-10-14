@@ -18,7 +18,7 @@ module YARD::TypeInference
 
       # handle circular refs
       if @started[ast_node] && !@memo.include?(ast_node)
-        return Registry.abstract_value_for_ast_node(ast_node, false)
+        return YARD::Registry.abstract_value_for_ast_node(ast_node, false)
       end
 
       if @memo.include?(ast_node)
@@ -39,9 +39,9 @@ module YARD::TypeInference
       lhs = ast_node[0]
       rhs = ast_node[1]
       rhs_av = process_ast_node(rhs)
-      lhs_av = Registry.abstract_value(lhs)
+      lhs_av = YARD::Registry.abstract_value(lhs)
       rhs_av.propagate(lhs_av)
-      av = Registry.abstract_value_for_ast_node(ast_node, false)
+      av = YARD::Registry.abstract_value_for_ast_node(ast_node, false)
       lhs_av.propagate(av)
       av
     end
@@ -59,7 +59,7 @@ module YARD::TypeInference
     end
 
     def process_def(ast_node)
-      method_obj = Registry.get_object_for_ast_node(ast_node)
+      method_obj = YARD::Registry.get_object_for_ast_node(ast_node)
       method_type = Type.from_object(method_obj)
 
       body_av = process_ast_node(ast_node[2]) # def body
@@ -68,7 +68,7 @@ module YARD::TypeInference
     end
 
     def process_defs(ast_node)
-      method_obj = Registry.get_object_for_ast_node(ast_node)
+      method_obj = YARD::Registry.get_object_for_ast_node(ast_node)
       method_type = Type.from_object(method_obj)
 
       body_av = process_ast_node(ast_node[4]) # def body
@@ -83,9 +83,9 @@ module YARD::TypeInference
     end
 
     def process_ident(ast_node)
-      av = Registry.abstract_value(ast_node)
-      obj = Registry.get_object_for_ast_node(ast_node)
-      if obj.is_a?(CodeObjects::MethodObject)
+      av = YARD::Registry.abstract_value(ast_node)
+      obj = YARD::Registry.get_object_for_ast_node(ast_node)
+      if obj.is_a?(YARD::CodeObjects::MethodObject)
         method_av = process_ast_node(obj.ast_node)
         method_av.propagate(av)
       end
@@ -101,11 +101,11 @@ module YARD::TypeInference
     end
 
     def process_ivar(ast_node)
-      Registry.abstract_value(ast_node)
+     YARD::Registry.abstract_value(ast_node)
     end
 
     def process_kw(ast_node)
-      Registry.abstract_value(ast_node)
+     YARD::Registry.abstract_value(ast_node)
     end
 
     def process_var_ref(ast_node)
@@ -124,24 +124,24 @@ module YARD::TypeInference
                else
                  process_ast_node(v) or raise "no obj for #{ast_node[0].source}"
                end
-      av = Registry.abstract_value_for_ast_node(ast_node, false)
+      av = YARD::Registry.abstract_value_for_ast_node(ast_node, false)
       ref_av.propagate(av)
       av
     end
 
     def process_const(ast_node)
-      av = Registry.abstract_value(ast_node)
+      av = YARD::Registry.abstract_value(ast_node)
       av.constant = true
-      obj = Registry.get_object_for_ast_node(ast_node)
-      if obj && obj.is_a?(CodeObjects::ClassObject)
+      obj = YARD::Registry.get_object_for_ast_node(ast_node)
+      if obj && obj.is_a?(YARD::CodeObjects::ClassObject)
         av.add_type(Type.from_object(obj))
       end
       av
     end
 
     def process_fcall(ast_node)
-      method_av = Registry.abstract_value(ast_node[0])
-      av = Registry.abstract_value(ast_node)
+      method_av = YARD::Registry.abstract_value(ast_node[0])
+      av = YARD::Registry.abstract_value(ast_node)
       method_av.types.each do |t|
         t.return_type.propagate(av)
       end
@@ -149,11 +149,11 @@ module YARD::TypeInference
     end
 
     def process_call(ast_node)
-      av = Registry.abstract_value_for_ast_node(ast_node, false)
+      av = YARD::Registry.abstract_value_for_ast_node(ast_node, false)
       recv_av = process_ast_node(ast_node[0])
 
       method_av = process_ast_node(ast_node[2])
-      method_obj = Registry.get_object_for_ast_node(ast_node[2])
+      method_obj = YARD::Registry.get_object_for_ast_node(ast_node[2])
       if method_obj && method_obj.name == :new && !method_obj.namespace.root?
         mtype = MethodType.new(method_obj.namespace, :class, :new, method_obj)
         mtype.return_type.add_type(InstanceType.new(method_obj.namespace))
@@ -166,6 +166,10 @@ module YARD::TypeInference
           mtype = Type.from_object(method_obj)
           method_av = process_ast_node(method_obj.ast_node)
         end
+
+        # we've found a new reference thanks to type inference, so add it to Registry.references
+        # TODO(sqs): add a spec that tests that we add it to Registry.references
+        YARD::Registry.add_reference(YARD::CodeObjects::Reference.new(method_obj, ast_node[2]))
       end
 
       if method_av
@@ -180,7 +184,7 @@ module YARD::TypeInference
 
 
     def process_vcall(ast_node)
-      av = Registry.abstract_value_for_ast_node(ast_node, false)
+      av = YARD::Registry.abstract_value_for_ast_node(ast_node, false)
 
       method_av = process_ast_node(ast_node[0])
       method_av.types.each do |mtype|

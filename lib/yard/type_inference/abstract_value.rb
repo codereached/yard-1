@@ -29,7 +29,7 @@ module YARD::TypeInference
 
     def lookup_method(method_name)
       @types.each do |type|
-        if type.is_a?(ClassType) && type.klass.is_a?(CodeObjects::ClassObject)
+        if type.is_a?(ClassType) && type.klass.is_a?(YARD::CodeObjects::ClassObject)
           type.klass.meths.each do |mth|
             if mth.name.to_s == method_name
               return mth

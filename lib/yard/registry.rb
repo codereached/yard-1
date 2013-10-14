@@ -223,7 +223,7 @@ module YARD
       end
 
       def add_typed_expr(expr)
-        raise ArgumentError, "invalid expr: #{expr}" unless expr.is_a?(TypeInference::Expr)
+        raise ArgumentError, "invalid expr: #{expr}" unless expr.is_a?(YARD::TypeInference::Expr)
         @typed_exprs ||= []
         @typed_exprs << expr
       end
@@ -234,16 +234,16 @@ module YARD
           abstract_value_for_object(obj)
         else
           tx = @typed_exprs.find do |expr|
-            expr.is_a?(TypeInference::AnonymousExpr) && expr.ast_node == ast_node && expr.ast_node.source_range == ast_node.source_range && expr.ast_node.file == ast_node.file
-          end || (x = TypeInference::AnonymousExpr.new(ast_node, nil); @typed_exprs << x; x)
+            expr.is_a?(YARD::TypeInference::AnonymousExpr) && expr.ast_node == ast_node && expr.ast_node.source_range == ast_node.source_range && expr.ast_node.file == ast_node.file
+          end || (x = YARD::TypeInference::AnonymousExpr.new(ast_node, nil); @typed_exprs << x; x)
           tx.abstract_value
         end
       end
 
       def abstract_value_for_object(object)
         tx = @typed_exprs.find do |expr|
-          expr.is_a?(TypeInference::ObjectExpr) && expr.object.path == object.path
-        end || (x = TypeInference::ObjectExpr.new(object, nil); @typed_exprs << x; x)
+          expr.is_a?(YARD::TypeInference::ObjectExpr) && expr.object.path == object.path
+        end || (x = YARD::TypeInference::ObjectExpr.new(object, nil); @typed_exprs << x; x)
         tx.abstract_value
       end
 

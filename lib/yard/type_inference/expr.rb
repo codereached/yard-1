@@ -13,7 +13,7 @@ module YARD::TypeInference
 
   class ObjectExpr < Expr
     def initialize(object, scope)
-      raise ArgumentError, "invalid object: #{object} (#{object.type})" unless object.is_a?(CodeObjects::Base) || object.is_a?(CodeObjects::Proxy)
+      raise ArgumentError, "invalid object: #{object} (#{object.type})" unless object.is_a?(YARD::CodeObjects::Base) || object.is_a?(YARD::CodeObjects::Proxy)
       super(object, scope)
     end
 
@@ -22,7 +22,7 @@ module YARD::TypeInference
 
   class AnonymousExpr < Expr
     def initialize(ast_node, scope)
-      raise ArgumentError, "invalid ast_node: #{ast_node}" unless ast_node.is_a?(Parser::Ruby::AstNode)
+      raise ArgumentError, "invalid ast_node: #{ast_node}" unless ast_node.is_a?(YARD::Parser::Ruby::AstNode)
       super(ast_node, scope)
     end
 

@@ -16,4 +16,8 @@ describe "YARD::TypeInference::Processor" do
   describe "circular" do
     check_file_inline_type_annotations(:inferencer_004_circular, __FILE__)
   end
+
+  describe "method with args" do
+    check_file_inline_type_annotations(:inferencer_005_method_args, __FILE__)
+  end
 end

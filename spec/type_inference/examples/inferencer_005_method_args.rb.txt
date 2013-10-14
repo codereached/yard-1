@@ -1,0 +1,7 @@
+def f(a)
+  a
+  3
+end
+
+f(7) #: ::Fixnum#
+f(7) #ident #f
