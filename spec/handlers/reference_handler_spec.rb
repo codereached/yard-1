@@ -68,8 +68,8 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
   describe "with `class << self` usage" do
     before(:all) { parse_file :reference_handler_003, __FILE__ }
 
-    it "should get 5 references to C1" do
-      Registry.references_to("C1").length.should == 5
+    it "should get 6 references to C1" do
+      Registry.references_to("C1").length.should == 6
     end
 
     it "should get 3 references to C1.my_class_method" do

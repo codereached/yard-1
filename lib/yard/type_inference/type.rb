@@ -3,6 +3,16 @@ module YARD::TypeInference
     def initialize(*args)
 
     end
+
+    class << self
+      def from_object(obj)
+        if obj.is_a?(CodeObjects::ClassObject)
+          ClassType.new(obj)
+        else
+          raise ArgumentError, "invalid obj: #{obj.inspect} (#{obj.type})"
+        end
+      end
+    end
   end
 
   class ClassType < Type

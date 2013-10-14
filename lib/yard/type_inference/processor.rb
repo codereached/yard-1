@@ -63,16 +63,31 @@ module YARD::TypeInference
 
     def process_var_ref(ast_node)
       v = ast_node[0]
-      case v.type
+      ref_av = case v.type
       when :kw
         if v[0] == "true"
           AbstractValue.single_type(InstanceType.new("::TrueClass"))
         elsif v[0] == "false"
           AbstractValue.single_type(InstanceType.new("::FalseClass"))
+        else
+          raise "unknown keyword: #{v.source}"
         end
       else
-        Registry.abstract_value(ast_node) or raise "no obj for #{ast_node[0].source}"
+        process_ast_node(v) or raise "no obj for #{ast_node[0].source}"
       end
+      av = Registry.abstract_value(ast_node)
+      ref_av.propagate(av)
+      av
+    end
+
+    def process_const(ast_node)
+      av = Registry.abstract_value(ast_node)
+      av.constant = true
+      obj = Registry.get_object_for_ast_node(ast_node)
+      if obj
+        av.add_type(Type.from_object(obj))
+      end
+      av
     end
 
     def process_fcall(ast_node)
@@ -95,6 +110,10 @@ module YARD::TypeInference
       method_av.propagate(av)
       av
     end
+
+    def process_void_stmt(_); AbstractValue.nil_type end
+
+    def process_comment(_); nil end
 
     def process_registry
       # TODO

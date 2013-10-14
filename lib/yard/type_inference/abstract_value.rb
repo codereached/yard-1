@@ -39,6 +39,10 @@ module YARD::TypeInference
         av.constant = true
         av
       end
+
+      def nil_type
+        single_type(InstanceType.new("::NilClass"))
+      end
     end
   end
 end

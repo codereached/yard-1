@@ -1,0 +1,13 @@
+class C
+  def initialize; end
+
+  def qux
+    1
+  end
+end
+
+C #: C
+
+c = C.new #: C#
+c.qux #: Fixnum#
+C.new.qux #: Fixnum#
