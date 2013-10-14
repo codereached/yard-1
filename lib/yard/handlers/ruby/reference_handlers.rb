@@ -1,7 +1,7 @@
 # Handles references
 module YARD::Handlers::Ruby::ReferenceHandlers
   class VarRefHandler < YARD::Handlers::Ruby::Base
-    handles :var_ref
+    handles :var_ref, :var_field
 
     process do
       name_node = statement[0]
@@ -58,18 +58,37 @@ module YARD::Handlers::Ruby::ReferenceHandlers
     end
   end
 
+  class MethodDefHandler < YARD::Handlers::Ruby::Base
+    handles :def
 
-  class MethodDefsRefHandler < YARD::Handlers::Ruby::Base
+    process do
+      name_node = statement[0]
+      method_name = '#' + name_node[0]
+      target = YARD::Registry.resolve(namespace, method_name, false, true)
+      if target
+        add_reference Reference.new(target, name_node)
+      end
+    end
+  end
+
+  class MethodDefsHandler < YARD::Handlers::Ruby::Base
     handles :defs
 
     process do
       recv = statement[0]
-      nobj = namespace
+      if recv[0].type == :const
+        nobj = P(namespace, recv.source)
+      else
+        nobj = namespace
+      end
+      nobj = P(namespace, nobj.value) while nobj.type == :constant
 
       if recv[0].type != :ident
-        nobj = P(namespace, recv.source) if recv[0].type == :const
         add_reference Reference.new(nobj, recv)
       end
+
+      mth = P(nobj, statement[2].source)
+      add_reference(Reference.new(mth, statement[2]))
     end
   end
 
@@ -102,7 +121,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
     handles :vcall, :fcall
 
     process do
-      parse_block(statement[1])
+      parse_block(statement[1]) if statement[1]
 
       name_node = statement[0]
       if name_node.type == :ident
@@ -117,7 +136,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
   # NodeTraverser traverses through AST nodes that do not affect the namespace.
   class NodeTraverser < YARD::Handlers::Ruby::Base
     def self.handles?(node)
-      [:list, :params, :list, :command, :command_call, :method_add_arg, :args_add_block, :arg_paren, :paren, :next].include?(node.type) || node.type.to_s.end_with?('_mod', '_literal') || node.class == AstNode || node.class == KeywordNode || node.class == ConditionalNode || node.class == LoopNode || node.class == ParameterNode
+      [:params, :list, :command, :command_call, :method_add_arg, :args_add_block, :arg_paren, :paren, :next].include?(node.type) || node.type.to_s.end_with?('_mod', '_literal') || node.class == AstNode || node.class == KeywordNode || node.class == ConditionalNode || node.class == LoopNode || node.class == ParameterNode
     end
 
     process do

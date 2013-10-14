@@ -4,6 +4,8 @@ class C1
     cm2
     self.cm2
     self.cm2
+    cm3
+    self.cm3
   end
 
   def m1
@@ -31,6 +33,8 @@ class C1
     ::C1.cm2
     cm2
     self.cm2
+    cm3
+    self.cm3
   end
 
   cm1
@@ -47,6 +51,18 @@ class C1
 
   self.cm1
   self.cm2
+end
+
+def C1.cm3
+  cm1
+  cm2
+  cm3
+  self.cm1
+  self.cm2
+  self.cm3
+  C1.cm1
+  C1.cm2
+  C1.cm3
 end
 
 C1.cm1

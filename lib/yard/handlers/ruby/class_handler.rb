@@ -45,7 +45,7 @@ class YARD::Handlers::Ruby::ClassHandler < YARD::Handlers::Ruby::Base
 
         if classname[0,1] =~ /[A-Z]/
           register ClassObject.new(namespace, classname) if Proxy === proxy
-          parse_block(statement[1], :namespace => proxy, :scope => :class, :local_scope => proxy.new_child_scope("<< <#{classname}", local_scope))
+          parse_block(statement[1], :namespace => proxy, :scope => :class, :local_scope => proxy.new_local_scope("<< <#{classname}", local_scope))
         else
           raise YARD::Parser::UndocumentableError, "class '#{classname}'"
         end
