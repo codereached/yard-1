@@ -62,6 +62,17 @@ module YARD
     autoload :CSEPQ,                __p('code_objects/base')
   end
 
+  module TypeInference
+    autoload :Processor, __p('type_inference/processor')
+    autoload :AbstractValue, __p('type_inference/abstract_value')
+    autoload :Type, __p('type_inference/type')
+    autoload :ClassType, __p('type_inference/type')
+    autoload :InstanceType, __p('type_inference/type')
+    autoload :Expr, __p('type_inference/expr')
+    autoload :ObjectExpr, __p('type_inference/expr')
+    autoload :AnonymousExpr, __p('type_inference/expr')
+  end
+
   # Handlers are called during the data processing part of YARD's
   # parsing phase. This allows YARD as well as any custom extension to
   # analyze source and generate {CodeObjects} to be stored for later use.

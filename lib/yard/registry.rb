@@ -206,6 +206,48 @@ module YARD
         return true
       end
 
+      def get_object_for_ast_node(ast_node)
+        ref = @references.values.flatten.find do |r|
+          r.ast_node.file == ast_node.file && r.ast_node.source_range == ast_node.source_range
+        end
+        ref.target if ref
+      end
+
+      def add_typed_expr(expr)
+        raise ArgumentError, "invalid expr: #{expr}" unless expr.is_a?(TypeInference::Expr)
+        @typed_exprs ||= []
+        @typed_exprs << expr
+      end
+
+      def abstract_value_for_ast_node(ast_node)
+        obj = get_object_for_ast_node(ast_node)
+        if obj
+          abstract_value_for_object(obj)
+        else
+          tx = @typed_exprs.find do |expr|
+            expr.is_a?(TypeInference::AnonymousExpr) && expr.ast_node == ast_node
+          end || (x = TypeInference::AnonymousExpr.new(ast_node, nil); @typed_exprs << x; x)
+          tx.abstract_value
+        end
+      end
+
+      def abstract_value_for_object(object)
+        tx = @typed_exprs.find do |expr|
+          expr.is_a?(TypeInference::ObjectExpr) && expr.object == object
+        end || (x = TypeInference::ObjectExpr.new(object, nil); @typed_exprs << x; x)
+        tx.abstract_value
+      end
+
+      def abstract_value(object_or_ast_node)
+        if object_or_ast_node.is_a?(CodeObjects::Base)
+          abstract_value_for_object(object_or_ast_node)
+        elsif object_or_ast_node.is_a?(Parser::Ruby::AstNode)
+          abstract_value_for_ast_node(object_or_ast_node)
+        else
+          raise ArgumentError, "invalid object or ast node: #{object_or_ast_node}"
+        end
+      end
+
       # Deletes an object from the registry
       # @param [CodeObjects::Base] object the object to remove
       # @return [void]
@@ -217,6 +259,7 @@ module YARD
       # @return [void]
       def clear
         @references = {}
+        @typed_exprs = []
         self.thread_local_store = RegistryStore.new
       end
 

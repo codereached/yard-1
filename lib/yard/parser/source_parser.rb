@@ -488,8 +488,8 @@ module YARD
       def post_process
         return unless @parser.respond_to? :enumerator
         return unless enumerator = @parser.enumerator
-        post = Handlers::Processor.new(self)
-        post.process(enumerator)
+        Handlers::Processor.new(self).process(enumerator)
+        TypeInference::Processor.new.process_ast_list(enumerator)
       end
 
       def parser_type=(value)
