@@ -55,6 +55,7 @@ module YARD::TypeInference
       @method_scope = method_scope
       @method_name = method_name
       @method_obj = method_obj
+      @return_type = AbstractValue.new
     end
 
     attr_reader :namespace
@@ -62,10 +63,18 @@ module YARD::TypeInference
     attr_reader :method_name
     attr_reader :method_obj
 
-    attr_accessor :return_type
+    attr_reader :return_type
+
+    def check!
+      return_type.types.each do |t|
+        if t.is_a?(MethodType)
+          raise "MethodType.return_type AbstractValue should not have MethodType types"
+        end
+      end
+    end
 
     def path
-      method_obj
+      method_obj.path
     end
   end
 end

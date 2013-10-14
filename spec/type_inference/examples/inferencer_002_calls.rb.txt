@@ -2,7 +2,7 @@ def f1
   3
 end
 
-f1 #: ::Fixnum#
-f1 #@ #f1
+f1 #vcall ::Fixnum#
+f1 #ident #f1
 a = f1() #: ::Fixnum#
 b = f1 #: ::Fixnum#
