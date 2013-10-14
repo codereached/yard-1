@@ -16,6 +16,11 @@ module YARD::TypeInference
     def process_ast_node(ast_node)
       raise ArgumentError, "invalid ast node: #{ast_node}" unless ast_node.is_a?(YARD::Parser::Ruby::AstNode)
 
+      method_name = "process_#{ast_node.type}"
+      if not respond_to?(method_name)
+        raise ArgumentError, "no #{method_name} processor method"
+      end
+
       # handle circular refs
       if @started[ast_node] && !@memo.include?(ast_node)
         return YARD::Registry.abstract_value_for_ast_node(ast_node, false)
@@ -26,13 +31,7 @@ module YARD::TypeInference
       end
 
       @started[ast_node] = true
-
-      method_name = "process_#{ast_node.type}"
-      if respond_to?(method_name)
-        @memo[ast_node] = send(method_name, ast_node)
-      else
-        raise ArgumentError, "no #{method_name} processor method"
-      end
+      @memo[ast_node] = send(method_name, ast_node)
     end
 
     def process_assign(ast_node)
@@ -140,11 +139,13 @@ module YARD::TypeInference
     end
 
     def process_fcall(ast_node)
-      method_av = YARD::Registry.abstract_value(ast_node[0])
-      av = YARD::Registry.abstract_value(ast_node)
-      method_av.types.each do |t|
-        t.return_type.propagate(av)
+      av = YARD::Registry.abstract_value_for_ast_node(ast_node, false)
+
+      method_av = process_ast_node(ast_node[0])
+      method_av.types.each do |mtype|
+        mtype.return_type.propagate(av)
       end
+
       av
     end
 

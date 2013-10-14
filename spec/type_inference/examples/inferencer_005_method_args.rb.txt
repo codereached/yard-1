@@ -1,7 +1,7 @@
-def f(a)
+def g(a)
   a
   3
 end
 
-f(7) #: ::Fixnum#
-f(7) #ident #f
+g(7) #: ::Fixnum#
+g(7) #ident #g
