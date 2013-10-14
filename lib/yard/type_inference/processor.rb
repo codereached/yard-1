@@ -84,7 +84,7 @@ module YARD::TypeInference
       av = Registry.abstract_value(ast_node)
       av.constant = true
       obj = Registry.get_object_for_ast_node(ast_node)
-      if obj
+      if obj && obj.is_a?(CodeObjects::ClassObject)
         av.add_type(Type.from_object(obj))
       end
       av
@@ -99,6 +99,22 @@ module YARD::TypeInference
 
     def process_call(ast_node)
       method_av = Registry.abstract_value(ast_node[2])
+      method_obj = Registry.get_object_for_ast_node(ast_node[2])
+      if method_obj && method_obj.name == :new && !method_obj.namespace.root?
+        method_av.add_type(InstanceType.new(method_obj.namespace))
+      elsif method_obj.respond_to?(:ast_node) && method_obj.ast_node
+        ret_av = process_ast_node(method_obj.ast_node)
+        ret_av.propagate(method_av)
+      else
+        # couldn't determine method, use inferred types
+        recv_av = process_ast_node(ast_node[0])
+        method_obj = recv_av.lookup_method(ast_node[2].source)
+        if method_obj
+          ret_av = process_ast_node(method_obj.ast_node)
+          ret_av.propagate(method_av)
+        end
+      end
+
       av = Registry.abstract_value_for_ast_node(ast_node, false)
       method_av.propagate(av)
       av

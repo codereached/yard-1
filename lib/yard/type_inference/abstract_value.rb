@@ -13,19 +13,31 @@ module YARD::TypeInference
       raise ArgumentError, "invalid type: #{type}" unless type.is_a?(Type)
       @types << type unless @types.include?(type)
       @forward.each do |fwd|
-        fwd.add_type(type)
+        add_type_to_abstract_value(type, fwd)
       end
     end
 
     def propagate(target)
-      raise ArgumentError, "target is constant: #{target.inspect}" if target.constant
       return if target == self
       # raise ArgumentError, "target is self: #{target.inspect} == #{self.inspect}" if target == self
       raise ArgumentError, "invalid target: #{target}" unless target.is_a?(AbstractValue)
       @forward << target unless @forward.include?(target)
       @types.each do |type|
-        target.add_type(type)
+        add_type_to_abstract_value(type, target)
       end
+    end
+
+    def lookup_method(method_name)
+      @types.each do |type|
+        if type.is_a?(ClassType) && type.klass.is_a?(CodeObjects::ClassObject)
+          type.klass.meths.each do |mth|
+            if mth.name.to_s == method_name
+              return mth
+            end
+          end
+        end
+      end
+      nil
     end
 
     def type_string
@@ -43,6 +55,13 @@ module YARD::TypeInference
       def nil_type
         single_type(InstanceType.new("::NilClass"))
       end
+    end
+
+    private
+
+    def add_type_to_abstract_value(type, aval)
+      raise ArgumentError, "target is constant: #{aval.inspect}" if aval.constant
+      aval.add_type(type)
     end
   end
 end

@@ -9,5 +9,6 @@ end
 C #: C
 
 c = C.new #: C#
-c.qux #: Fixnum#
-C.new.qux #: Fixnum#
+c #: C#
+c.qux #: ::Fixnum#
+C.new.qux #: ::Fixnum#

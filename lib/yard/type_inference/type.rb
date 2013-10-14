@@ -4,6 +4,14 @@ module YARD::TypeInference
 
     end
 
+    def path
+      raise NotImplementedError
+    end
+
+    def ==(o)
+      o.is_a?(Type) && o.path == self.path
+    end
+
     class << self
       def from_object(obj)
         if obj.is_a?(CodeObjects::ClassObject)
