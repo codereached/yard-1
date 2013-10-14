@@ -40,8 +40,15 @@ module YARD::TypeInference
       nil
     end
 
-    def type_string
-      types.map(&:path).join(', ')
+    def type_string(*opts)
+      @types.map do |t|
+        if opts == [:return_type]
+          # TODO(sqs): get all return types, not just first
+          t.is_a?(MethodType) ? (t.return_type && t.return_type.types[0]) : t
+        else
+          t
+        end
+      end.map(&:path).join(', ')
     end
 
     class << self
@@ -49,6 +56,12 @@ module YARD::TypeInference
         av = AbstractValue.new
         av.add_type(type)
         av.constant = true
+        av
+      end
+
+      def single_type_nonconst(type)
+        av = AbstractValue.new
+        av.add_type(type)
         av
       end
 

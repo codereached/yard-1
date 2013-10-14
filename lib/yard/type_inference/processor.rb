@@ -36,17 +36,23 @@ module YARD::TypeInference
     end
 
     def process_def(ast_node)
-      def_av = Registry.abstract_value(ast_node)
-      body_av = process_ast_node(ast_node[2])
-      body_av.propagate(def_av)
-      def_av
+      method_obj = Registry.get_object_for_ast_node(ast_node)
+      method_type = Type.from_object(method_obj)
+      method_type.return_type = AbstractValue.new
+
+      body_av = process_ast_node(ast_node[2]) # def body
+      body_av.propagate(method_type.return_type)
+      AbstractValue.single_type_nonconst(method_type)
     end
 
     def process_defs(ast_node)
-      def_av = Registry.abstract_value(ast_node)
-      body_av = process_ast_node(ast_node[4])
-      body_av.propagate(def_av)
-      def_av
+      method_obj = Registry.get_object_for_ast_node(ast_node)
+      method_type = Type.from_object(method_obj)
+      method_type.return_type = AbstractValue.new
+
+      body_av = process_ast_node(ast_node[4]) # def body
+      body_av.propagate(method_type.return_type)
+      AbstractValue.single_type_nonconst(method_type)
     end
 
     def process_ident(ast_node)
@@ -61,6 +67,14 @@ module YARD::TypeInference
       AbstractValue.single_type(InstanceType.new("::String"))
     end
 
+    def process_ivar(ast_node)
+      # TODO
+    end
+
+    def process_kw(ast_node)
+      Registry.abstract_value(ast_node)
+    end
+
     def process_var_ref(ast_node)
       v = ast_node[0]
       ref_av = case v.type
@@ -69,6 +83,8 @@ module YARD::TypeInference
           AbstractValue.single_type(InstanceType.new("::TrueClass"))
         elsif v[0] == "false"
           AbstractValue.single_type(InstanceType.new("::FalseClass"))
+        elsif v[0] == "self"
+          process_ast_node(v) or raise "no obj for #{ast_node[0].source}"
         else
           raise "unknown keyword: #{v.source}"
         end
@@ -93,37 +109,53 @@ module YARD::TypeInference
     def process_fcall(ast_node)
       method_av = Registry.abstract_value(ast_node[0])
       av = Registry.abstract_value(ast_node)
-      method_av.propagate(av)
+      method_av.types.each do |t|
+        t.return_type.propagate(av)
+      end
       av
     end
 
     def process_call(ast_node)
-      method_av = Registry.abstract_value(ast_node[2])
+      recv_av = process_ast_node(ast_node[0])
+      method_av = process_ast_node(ast_node[2])
       method_obj = Registry.get_object_for_ast_node(ast_node[2])
       if method_obj && method_obj.name == :new && !method_obj.namespace.root?
-        method_av.add_type(InstanceType.new(method_obj.namespace))
+        mtype = MethodType.new(method_obj.namespace, :class, :new, method_obj)
+        mtype.return_type = AbstractValue.single_type_nonconst(InstanceType.new(method_obj.namespace))
+        method_av.add_type(mtype)
       elsif method_obj.respond_to?(:ast_node) && method_obj.ast_node
         ret_av = process_ast_node(method_obj.ast_node)
         ret_av.propagate(method_av)
       else
         # couldn't determine method, use inferred types
-        recv_av = process_ast_node(ast_node[0])
-        method_obj = recv_av.lookup_method(ast_node[2].source)
+        method_name = ast_node[2].source
+        method_obj = recv_av.lookup_method(method_name)
         if method_obj
-          ret_av = process_ast_node(method_obj.ast_node)
-          ret_av.propagate(method_av)
+          mtype = MethodType.new(method_obj.namespace, recv_av.types.find { |t| t.is_a?(InstanceType) }, method_name, method_obj)
+          mtype.return_type = process_ast_node(method_obj.ast_node)
+          method_av.add_type(mtype)
         end
       end
 
       av = Registry.abstract_value_for_ast_node(ast_node, false)
-      method_av.propagate(av)
+      method_av.types.each do |t|
+        t.return_type.propagate(av) if t.is_a?(MethodType) && t.return_type
+      end
       av
     end
 
     def process_vcall(ast_node)
-      method_av = Registry.abstract_value(ast_node[0])
+      method_av = process_ast_node(ast_node[0])
+      method_obj = Registry.get_object_for_ast_node(ast_node[0])
+      if method_obj.respond_to?(:ast_node) && method_obj.ast_node
+        mtype = MethodType.new(method_obj.namespace, method_obj.scope, method_obj.name, method_obj)
+        mtype.return_type = process_ast_node(method_obj.ast_node)
+        method_av.add_type(mtype)
+      end
       av = Registry.abstract_value_for_ast_node(ast_node, false)
-      method_av.propagate(av)
+      method_av.types.each do |t|
+        t.return_type.propagate(av) if t.is_a?(MethodType) && t.return_type
+      end
       av
     end
 

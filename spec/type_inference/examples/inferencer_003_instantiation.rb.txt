@@ -12,3 +12,6 @@ c = C.new #: C#
 c #: C#
 c.qux #: ::Fixnum#
 C.new.qux #: ::Fixnum#
+
+c.qux #@ C#qux
+C.new.qux #@ C#qux

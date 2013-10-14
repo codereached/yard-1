@@ -25,6 +25,20 @@ def check_file_inline_type_annotations(file, thisfile = __FILE__, log_level = lo
           if node.line_range.last == lineno
             it "should infer type of #{node.inspect} (line #{node.line_range}) as #{type_string}" do
               av = Registry.abstract_value(node)
+              av.type_string(:return_type).should == type_string
+            end
+            break
+          end
+        end
+      end
+    end
+    each_comment_with_prefix("@ ", lines) do |line, type_string, lineno|
+      enum = p.enumerator
+      enum.each do |topnode|
+        topnode.traverse do |node|
+          if node.line_range.last == lineno
+            it "should infer unevaluated type of #{node.inspect} (line #{node.line_range}) as #{type_string}" do
+              av = Registry.abstract_value(node)
               av.type_string.should == type_string
             end
             break
