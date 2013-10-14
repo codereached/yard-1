@@ -13,7 +13,7 @@ module YARD::TypeInference
 
   class ObjectExpr < Expr
     def initialize(object, scope)
-      raise ArgumentError, "invalid object: #{object}" unless object.is_a?(CodeObjects::Base)
+      raise ArgumentError, "invalid object: #{object} (#{object.type})" unless object.is_a?(CodeObjects::Base) || object.is_a?(CodeObjects::Proxy)
       super(object, scope)
     end
 

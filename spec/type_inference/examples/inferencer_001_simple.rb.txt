@@ -1,6 +1,7 @@
 a = 1 #: ::Fixnum#
 b = a #: ::Fixnum#
 
+
 A = "z" #: ::String#
 B = A #: ::String#
 

@@ -40,6 +40,8 @@ class C1
   cm1
   cm2
 
+  z = cm1
+
   cm1()
   cm2()
 

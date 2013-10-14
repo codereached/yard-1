@@ -210,7 +210,16 @@ module YARD
         ref = @references.values.flatten.find do |r|
           r.ast_node.file == ast_node.file && r.ast_node.source_range == ast_node.source_range
         end
-        ref.target if ref
+        if ref
+          return ref.target
+        end
+        each do |o|
+          next unless o.ast_node
+          if o.ast_node.file == ast_node.file && o.ast_node.source_range == ast_node.source_range
+            return o
+          end
+        end
+        nil
       end
 
       def add_typed_expr(expr)
@@ -219,13 +228,13 @@ module YARD
         @typed_exprs << expr
       end
 
-      def abstract_value_for_ast_node(ast_node)
-        obj = get_object_for_ast_node(ast_node)
+      def abstract_value_for_ast_node(ast_node, resolve = true)
+        obj = get_object_for_ast_node(ast_node) if resolve
         if obj
           abstract_value_for_object(obj)
         else
           tx = @typed_exprs.find do |expr|
-            expr.is_a?(TypeInference::AnonymousExpr) && expr.ast_node == ast_node
+            expr.is_a?(TypeInference::AnonymousExpr) && expr.ast_node == ast_node && expr.ast_node.source_range == ast_node.source_range && expr.ast_node.file == ast_node.file
           end || (x = TypeInference::AnonymousExpr.new(ast_node, nil); @typed_exprs << x; x)
           tx.abstract_value
         end

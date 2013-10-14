@@ -1,10 +1,12 @@
 module YARD::TypeInference
   class AbstractValue
     attr_reader :types
+    attr_accessor :constant
 
     def initialize
       @forward = []
       @types = []
+      @constant = false
     end
 
     def add_type(type)
@@ -16,7 +18,9 @@ module YARD::TypeInference
     end
 
     def propagate(target)
-      raise ArgumentError, "target is self" if target == self
+      raise ArgumentError, "target is constant: #{target.inspect}" if target.constant
+      return if target == self
+      # raise ArgumentError, "target is self: #{target.inspect} == #{self.inspect}" if target == self
       raise ArgumentError, "invalid target: #{target}" unless target.is_a?(AbstractValue)
       @forward << target unless @forward.include?(target)
       @types.each do |type|
@@ -32,6 +36,7 @@ module YARD::TypeInference
       def single_type(type)
         av = AbstractValue.new
         av.add_type(type)
+        av.constant = true
         av
       end
     end

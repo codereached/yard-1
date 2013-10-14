@@ -93,7 +93,7 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
     end
 
     it "should get 16 references to C1.cm1" do
-      Registry.references_to("C1.cm1").length.should == 16
+      Registry.references_to("C1.cm1").length.should == 17
     end
 
     it "should get 22 references to C1.cm2" do

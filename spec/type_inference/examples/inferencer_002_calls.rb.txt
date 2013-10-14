@@ -1,0 +1,23 @@
+def f1
+  3
+end
+
+f1 #: ::Fixnum#
+a = f1() #: ::Fixnum#
+b = f1 #: ::Fixnum#
+
+class C
+  def self.f2
+    "hi"
+  end
+
+  f2 #: ::String#
+  self.f2 #: ::String#
+  C.f2 #: ::String#
+
+  a = f2 #: ::String#
+  a #: ::String#
+end
+
+z = C.f2 #: ::String#
+z #: ::String#

@@ -383,7 +383,7 @@ module YARD
         opts = {
           :namespace => namespace,
           :scope => :instance,
-          :self_binding => :instance,
+          :self_binding => self_binding,
           :owner => owner || namespace,
           :local_scope => local_scope,
           :visibility => nil
