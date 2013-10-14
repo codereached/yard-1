@@ -122,37 +122,6 @@ module YARD::TypeInference
       av
     end
 
-    # def process_call(ast_node)
-    #   recv_av = process_ast_node(ast_node[0])
-    #   method_av = process_ast_node(ast_node[2])
-    #   method_obj = Registry.get_object_for_ast_node(ast_node[2])
-    #   if method_obj && method_obj.name == :new && !method_obj.namespace.root?
-    #     mtype = MethodType.new(method_obj.namespace, :class, :new, method_obj)
-    #     mtype.return_type.add_type(InstanceType.new(method_obj.namespace))
-    #     method_av.add_type(mtype)
-    #   elsif method_obj.respond_to?(:ast_node) && method_obj.ast_node
-    #     ret_av = process_ast_node(method_obj.ast_node)
-    #     ret_av.propagate(method_av)
-    #   else
-    #     # couldn't determine method, use inferred types
-    #     method_name = ast_node[2].source
-    #     method_obj = recv_av.lookup_method(method_name)
-    #     if method_obj
-    #       mtype = MethodType.new(method_obj.namespace, recv_av.types.find { |t| t.is_a?(InstanceType) } ? :instance : :class, method_name, method_obj)
-    #       method_av2 = process_ast_node(method_obj.ast_node)
-    #       method_av.add_type(method_av2.types[0])
-    #       puts "METHOD_AV #{method_av.inspect}"
-    #     end
-    #   end
-
-    #   av = Registry.abstract_value_for_ast_node(ast_node, false)
-    #   method_av.types.each do |t|
-    #     t.return_type.propagate(av) if t.is_a?(MethodType) && t.return_type
-    #     t.check! if t.is_a?(MethodType)
-    #   end
-    #   av
-    # end
-
     def process_call(ast_node)
       av = Registry.abstract_value_for_ast_node(ast_node, false)
       recv_av = process_ast_node(ast_node[0])
