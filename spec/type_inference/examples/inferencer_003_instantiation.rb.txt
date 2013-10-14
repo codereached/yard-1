@@ -17,3 +17,9 @@ c.qux #C YARD::TypeInference::MethodType
 
 c.qux #@ C#qux
 C.new.qux #@ C#qux
+
+c2 = C.new() #: C#
+c2 #: C#
+c2.qux() #: ::Fixnum#
+C.new() #ident C.new
+c2.qux #vcall ::Fixnum#
