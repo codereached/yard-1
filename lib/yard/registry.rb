@@ -208,11 +208,9 @@ module YARD
 
       def get_object_for_ast_node(ast_node)
         ref = @references.values.flatten.find do |r|
-            puts "file #{r.ast_node.file} == #{ast_node.file} && source_range #{r.ast_node.source_range} == #{ast_node.source_range} ==> #{r.ast_node.file == ast_node.file && r.ast_node.source_range == ast_node.source_range} ==> target = #{r.target.path}"
           r.ast_node.file == ast_node.file && r.ast_node.source_range == ast_node.source_range
         end
         if ref
-          puts " ==> RETURNING #{ref.target.path}"
           return ref.target
         end
         each do |o|
@@ -244,7 +242,6 @@ module YARD
 
       def abstract_value_for_object(object)
         tx = @typed_exprs.find do |expr|
-          puts " --> abstract_value_for_object isObj=#{expr.is_a?(TypeInference::ObjectExpr)}, path #{expr.object.path} == #{object.path}"
           expr.is_a?(TypeInference::ObjectExpr) && expr.object.path == object.path
         end || (x = TypeInference::ObjectExpr.new(object, nil); @typed_exprs << x; x)
         tx.abstract_value
