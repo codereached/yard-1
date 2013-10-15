@@ -38,7 +38,7 @@ module YARD::CodeObjects
 
       # handle module function
       if scope == :module
-        other = self.class.new(namespace, local_scope, name, &block)
+        other = self.class.new(namespace, name, &block)
         other.visibility = :private
         scope = :class
         @module_function = true
@@ -58,7 +58,7 @@ module YARD::CodeObjects
 
       # handle module function
       if v == :module
-        other = self.class.new(namespace, local_scope, name)
+        other = self.class.new(namespace, name)
         other.visibility = :private
         @visibility = :public
         @module_function = true

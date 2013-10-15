@@ -19,7 +19,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
       if target
         add_reference Reference.new(target, name_node)
       else
-        log.warn("No reference target found for name_node #{name_node.inspect}")
+        #log.warn("No reference target found for name_node #{name_node.inspect}")
       end
     end
   end
@@ -133,7 +133,9 @@ module YARD::Handlers::Ruby::ReferenceHandlers
         method_name = name_node[0]
         method_name = self_binding == :instance ? "##{method_name}" : ".#{method_name}"
         method_object = YARD::Registry.resolve(namespace, method_name, true, true)
-        add_reference Reference.new(method_object, name_node)
+        if method_object
+          add_reference Reference.new(method_object, name_node)
+        end
       end
     end
   end

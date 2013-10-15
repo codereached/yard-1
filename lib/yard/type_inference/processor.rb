@@ -7,7 +7,7 @@ module YARD::TypeInference
 
     def process_ast_list(ast)
       ast.map do |ast_node|
-        process_ast_node(ast_node)
+        process_ast_node(ast_node) if ast_node.is_a?(YARD::Parser::Ruby::AstNode)
       end.last
     end
 
@@ -18,7 +18,7 @@ module YARD::TypeInference
 
       method_name = "process_#{ast_node.type}"
       if not respond_to?(method_name)
-        raise ArgumentError, "no #{method_name} processor method"
+        raise ArgumentError, "no #{method_name} processor method - AST node is #{ast_node.inspect} at #{ast_node.file} line #{ast_node.line_range}"
       end
 
       # handle circular refs
@@ -45,8 +45,24 @@ module YARD::TypeInference
       av
     end
 
+    def process_massign(node)
+      # TODO(sqs)
+      YARD::Registry.abstract_value(node)
+    end
+
+    def process_aref(node)
+      # TODO(sqs)
+      YARD::Registry.abstract_value(node)
+    end
+
     def process_class(ast_node)
       bodystmt = ast_node[2]
+      process_ast_node(bodystmt)
+      nil
+    end
+
+    def process_sclass(ast_node)
+      bodystmt = ast_node[1]
       process_ast_node(bodystmt)
       nil
     end
@@ -62,7 +78,9 @@ module YARD::TypeInference
       method_type = Type.from_object(method_obj)
 
       body_av = process_ast_node(ast_node[2]) # def body
-      body_av.propagate(method_type.return_type)
+      if body_av
+        body_av.propagate(method_type.return_type)
+      end
       AbstractValue.single_type_nonconst(method_type)
     end
 
@@ -71,7 +89,9 @@ module YARD::TypeInference
       method_type = Type.from_object(method_obj)
 
       body_av = process_ast_node(ast_node[4]) # def body
-      body_av.propagate(method_type.return_type)
+      if body_av
+        body_av.propagate(method_type.return_type)
+      end
       AbstractValue.single_type_nonconst(method_type)
     end
 
@@ -79,6 +99,10 @@ module YARD::TypeInference
       ast_node.map do |n|
         process_ast_node(n)
       end.last
+    end
+
+    def process_top_const_ref(ast_node)
+      YARD::Registry.abstract_value(ast_node)
     end
 
     def process_ident(ast_node)
@@ -91,12 +115,186 @@ module YARD::TypeInference
       av
     end
 
+    def process_yield0(ast_node)
+      YARD::Registry.abstract_value(ast_node)
+    end
+
+    def process_yield(ast_node)
+      process_ast_node(ast_node[0]) # args
+      YARD::Registry.abstract_value(ast_node)
+    end
+
+    def process_if(if_node)
+      av = YARD::Registry.abstract_value(if_node)
+      process_ast_node(if_node.condition)
+
+      then_av = process_ast_node(if_node.then_block)
+      if then_av
+        then_av.propagate(av)
+      end
+
+      if if_node.else_block
+        else_av = process_ast_node(if_node.else_block)
+        else_av.propagate(av)
+      end
+
+      av
+    end
+
+    alias process_unless process_if
+    alias process_elsif process_if
+    alias process_if_mod process_if
+    alias process_unless_mod process_if
+
+    # ternary
+    def process_ifop(node)
+      process_ast_node(node[0]) # condition
+      av = YARD::Registry.abstract_value(node)
+      then_av = process_ast_node(node[1])
+      then_av.propagate(av)
+      else_av = process_ast_node(node[2])
+      else_av.propagate(av)
+      av
+    end
+
+    def process_begin(node)
+      # TODO(sqs): this is not comprehensive
+      process_ast_node(node[0][0])
+    end
+
+    def process_nil_control_flow_kw(node)
+      AbstractValue.nil_type
+    end
+
+    alias process_retry process_nil_control_flow_kw
+    alias process_break process_nil_control_flow_kw
+    alias process_next process_nil_control_flow_kw
+
+    def process_rescue(node)
+      # TODO(sqs): this is not comprehensive
+      process_ast_node(node[2])
+    end
+
+    def process_ensure(node)
+      # TODO(sqs): this is not comprehensive
+      process_ast_node(node[0])
+    end
+
+    def process_finally(node)
+      # TODO(sqs): this is not comprehensive
+      process_ast_node(node[0])
+    end
+
+    def process_rescue_mod(node)
+      expr1 = process_ast_node(node[0])
+      expr2 = process_ast_node(node[1])
+      av = YARD::Registry.abstract_value(node)
+      expr1.propagate(av)
+      expr2.propagate(av)
+      av
+    end
+
+    def process_loop(node)
+      process_ast_node(node.condition)
+      process_ast_node(node.block)
+    end
+
+    alias process_while process_loop
+    alias process_until process_loop
+    alias process_while_mod process_loop
+    alias process_until_mod process_loop
+
+    def process_case(node)
+      process_ast_node(node[0]) # switch var
+      process_ast_node(node[1])
+    end
+
+    def process_when(node)
+      process_ast_node(node[0]) # condition
+      av = YARD::Registry.abstract_value(node)
+      then_av = process_ast_node(node[1])
+      then_av.propagate(av)
+
+      others = node[2]
+      if others
+        if others.type == :when
+          other_cases_av = process_ast_node(others)
+          other_cases_av.propagate(av)
+        elsif others.type == :else
+          else_av = process_ast_list(others[0])
+          else_av.propagate(av)
+        end
+      end
+
+      av
+    end
+
+    def process_binary(node)
+      AbstractValue.single_type(InstanceType.new("::TrueClass"))
+    end
+
+    def process_unary(node)
+      # TODO(sqs)
+      process_ast_node(node[1])
+    end
+
+    def process_regexp_literal(node)
+      # TODO(sqs): handle string_embexpr in regexps
+      AbstractValue.single_type(InstanceType.new("::Regexp"))
+    end
+
     def process_int(ast_node)
       AbstractValue.single_type(InstanceType.new("::Fixnum"))
     end
 
+    def process_CHAR(ast_node)
+      AbstractValue.single_type(InstanceType.new("::String"))
+    end
+
+    def process_float(ast_node)
+      AbstractValue.single_type(InstanceType.new("::Float"))
+    end
+
+    def process_hash(ast_node)
+      AbstractValue.single_type(InstanceType.new("::Hash"))
+    end
+
+    def process_dot2(ast_node)
+      AbstractValue.single_type(InstanceType.new("::Range"))
+    end
+    alias process_dot3 process_dot2
+
+    def process_array(ast_node)
+      AbstractValue.single_type(InstanceType.new("::Array"))
+    end
+
     def process_string_literal(ast_node)
       AbstractValue.single_type(InstanceType.new("::String"))
+    end
+
+    def process_backref(ast_node)
+      # these are in regexps so they are always strings, right?
+      AbstractValue.single_type(InstanceType.new("::String"))
+    end
+
+    def process_symbol_literal(ast_node)
+      AbstractValue.single_type(InstanceType.new("::Symbol"))
+    end
+
+    def process_defined(ast_node)
+      AbstractValue.single_type(InstanceType.new("::TrueClass"))
+    end
+
+    def process_paren(ast_node)
+      process_ast_node(ast_node[0])
+    end
+
+    def process_return(return_node)
+      process_ast_node(return_node[0][0])
+    end
+
+    def process_return0(return_node)
+      AbstractValue.nil_type
     end
 
     def process_ivar(ast_node)
@@ -111,6 +309,37 @@ module YARD::TypeInference
      YARD::Registry.abstract_value(ast_node)
     end
 
+    def process_opassign(ast_node)
+      av = YARD::Registry.abstract_value(ast_node)
+      rhs_av = process_ast_node(ast_node[2])
+      rhs_av.propagate(av)
+      av
+    end
+
+    def process_gvar(ast_node)
+      YARD::Registry.abstract_value(ast_node)
+    end
+
+    def process_gvar(node)
+      YARD::Registry.abstract_value(node)
+    end
+
+    def process_dyna_symbol(node)
+      AbstractValue.single_type(InstanceType.new("::Symbol"))
+    end
+
+    def process_zsuper(node)
+      YARD::Registry.abstract_value(node)
+    end
+
+    def process_super(node)
+      YARD::Registry.abstract_value(node)
+    end
+
+    def process_alias(node)
+      AbstractValue.nil_type
+    end
+
     def process_var_ref(ast_node)
       v = ast_node[0]
       ref_av = case v.type
@@ -121,6 +350,8 @@ module YARD::TypeInference
                    AbstractValue.single_type(InstanceType.new("::FalseClass"))
                  elsif v[0] == "self"
                    process_ast_node(v) or raise "no obj for #{ast_node[0].source}"
+                 elsif v[0] == "nil"
+                   AbstractValue.nil_type
                  else
                    raise "unknown keyword: #{v.source}"
                  end
@@ -185,7 +416,7 @@ module YARD::TypeInference
           # TODO(sqs): add a spec that tests that we add it to Registry.references
           YARD::Registry.add_reference(YARD::CodeObjects::Reference.new(method_obj, ast_node[2]))
         else
-          log.warn "Couldn't find method_obj for method #{method_name.inspect} in recv #{ast_node[0].inspect}"
+          #log.warn "Couldn't find method_obj for method #{method_name.inspect} in recv #{ast_node[0].inspect[0..40]}"
         end
       end
 
@@ -199,16 +430,23 @@ module YARD::TypeInference
       av
     end
 
-
     def process_vcall(ast_node)
       av = YARD::Registry.abstract_value_for_ast_node(ast_node, false)
 
       method_av = process_ast_node(ast_node[0])
-      method_av.types.each do |mtype|
-        mtype.return_type.propagate(av)
+      method_av.types.each do |t|
+        t.return_type.propagate(av) if t.is_a?(MethodType) && t.return_type
       end
 
       av
+    end
+
+    def process_command_call(ast_node)
+      process_call(ast_node)
+    end
+
+    def process_command(ast_node)
+      AbstractValue.nil_type
     end
 
     def process_void_stmt(_); AbstractValue.nil_type end

@@ -1,3 +1,6 @@
+MAX_FORWARD = 2
+MAX_DEPTH = 35
+
 module YARD::TypeInference
   class AbstractValue
     attr_reader :types
@@ -9,11 +12,11 @@ module YARD::TypeInference
       @constant = false
     end
 
-    def add_type(type)
+    def add_type(type, _depth = 0)
       raise ArgumentError, "invalid type: #{type}" unless type.is_a?(Type)
       @types << type unless @types.include?(type)
-      @forward.each do |fwd|
-        add_type_to_abstract_value(type, fwd)
+      @forward[0..MAX_FORWARD-1].each do |fwd|
+        add_type_to_abstract_value(type, fwd, _depth)
       end
     end
 
@@ -65,9 +68,13 @@ module YARD::TypeInference
 
     private
 
-    def add_type_to_abstract_value(type, aval)
+    def add_type_to_abstract_value(type, aval, _depth = 0)
       raise ArgumentError, "target is constant: #{aval.inspect}" if aval.constant
-      aval.add_type(type)
+      if _depth > MAX_DEPTH
+        log.warn "add_type_to_abstract_value MAX_DEPTH exceeded (#{_depth}), not adding type"
+        return
+      end
+      aval.add_type(type, _depth + 1)
     end
   end
 end

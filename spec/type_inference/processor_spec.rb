@@ -36,4 +36,8 @@ describe "YARD::TypeInference::Processor" do
   describe "instance methods called externally" do
     check_file_inline_type_annotations(:inferencer_009_external_imethods, __FILE__)
   end
+
+  describe "process all AST nodes" do
+    check_file_inline_type_annotations(:inferencer_010_process_ast, __FILE__)
+  end
 end

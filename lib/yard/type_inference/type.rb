@@ -34,7 +34,7 @@ module YARD::TypeInference
     attr_reader :klass
 
     def path
-      if klass.is_a?(CodeObjects::Base)
+      if klass.is_a?(YARD::CodeObjects::Base)
         klass.path
       else
         klass

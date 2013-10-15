@@ -163,4 +163,16 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
       end
     end
   end
+
+  describe "type inferenced refs to instance methods (009)" do
+    before(:all) { parse_file :reference_handler_009_type_inference_imethods, __FILE__ }
+
+    {
+      'A#im' => 3,
+    }.each do |path, num_refs|
+      it "should get #{num_refs} reference to #{path}" do
+        Registry.references_to(path).length.should == num_refs
+      end
+    end
+  end
 end
