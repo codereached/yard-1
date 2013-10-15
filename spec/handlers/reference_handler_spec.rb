@@ -144,7 +144,8 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
       'A::@iv1' => 3,
       "A::@@cv1" => 3,
     }.each do |path, num_refs|
-      it "should get #{num_refs} reference to #{path}" do
+      it "should get #{num_refs} references to #{path}" do
+        Registry.at(path).should_not be_nil
         Registry.references_to(path).length.should == num_refs
       end
     end

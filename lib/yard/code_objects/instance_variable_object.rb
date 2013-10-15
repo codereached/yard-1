@@ -4,7 +4,5 @@ module YARD::CodeObjects
   class InstanceVariableObject < Base
     # @return [String] the instance variable's value
     attr_accessor :value
-
-    def sep; "#"; end
   end
 end

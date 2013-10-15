@@ -8,10 +8,10 @@ class A
     @@cv1
   end
 
-  @cv1 = "baz"
+  @@cv1 = "baz"
 
   def self.qux
-    @cv1
+    @@cv1
   end
 end
 

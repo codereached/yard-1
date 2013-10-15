@@ -9,11 +9,9 @@ module YARD::Handlers::Ruby::ReferenceHandlers
 
       target = if name_node.type == :kw && name_node[0] == 'self'
         namespace
-      elsif name_node.type == :ivar
-        name2 = self_binding == :class ? "@#{name.sub('@', '')}" : "##{name}"
-        YARD::Registry.resolve(namespace, name2, true, true)
-      elsif name_node.type == :cvar
-        YARD::Registry.resolve(namespace, "#{name.sub('@', '')}", true, true)
+      elsif [:ivar, :cvar].include?(name_node.type)
+        name.gsub!(/^@+/, '@@') if self_binding == :class
+        YARD::Registry.resolve(namespace, name, true, false) || P("#{namespace.path}::#{name}")
       else
         local_scope.resolve(name) || YARD::Registry.resolve(namespace, name, false, false)
       end

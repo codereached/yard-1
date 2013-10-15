@@ -1,10 +1,9 @@
 module A
   class B
-    @@somevar = "hello"
-	@@somevar.value = "H"
+    @@inclass = "hello"
 
     def method
-      @@somevar = "don't document this"
+      @@inmethod = "hi"
     end
   end
 end

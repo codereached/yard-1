@@ -1,7 +1,6 @@
 # Handles a class variable (@@variable)
 class YARD::Handlers::Ruby::ClassVariableHandler < YARD::Handlers::Ruby::Base
   handles :assign
-  namespace_only
 
   process do
     if statement[0].type == :var_field && statement[0][0].type == :cvar
