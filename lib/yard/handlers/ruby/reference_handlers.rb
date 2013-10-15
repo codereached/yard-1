@@ -146,8 +146,12 @@ module YARD::Handlers::Ruby::ReferenceHandlers
       [:params, :list, :command, :command_call, :method_add_arg, :args_add_block, :arg_paren, :paren, :next].include?(node.type) || node.type.to_s.end_with?('_mod', '_literal') || node.class == AstNode || node.class == KeywordNode || node.class == ConditionalNode || node.class == LoopNode || node.class == ParameterNode
     end
 
+    @@traversed = {}
+
     process do
       statement.each do |st|
+        next if @@traversed[st.object_id]
+        @@traversed[st.object_id] = true
         parse_block(st) if st.respond_to?(:type)
       end
     end
