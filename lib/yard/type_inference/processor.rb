@@ -199,6 +199,12 @@ module YARD::TypeInference
       process_ast_node(node.block)
     end
 
+    def process_for(node)
+      process_ast_node(node[0])
+      process_ast_node(node[1])
+      process_ast_node(node.block)
+    end
+
     alias process_while process_loop
     alias process_until process_loop
     alias process_while_mod process_loop
@@ -338,6 +344,18 @@ module YARD::TypeInference
 
     def process_alias(node)
       AbstractValue.nil_type
+    end
+
+    def process_var_alias(node)
+      AbstractValue.nil_type
+    end
+
+    def process_END(node)
+      process_ast_list(node[0])
+    end
+
+    def process_var_field(ast_node)
+      process_ast_node(ast_node[0])
     end
 
     def process_var_ref(ast_node)

@@ -77,6 +77,15 @@ $foo
 
 ?C
 
+$a=1
+alias $b $a
+
+END {
+  puts "ok"
+}
+
+for c in [1,2];end
+
 Z ? 3 : true
 
 a, b, *c = foo()
