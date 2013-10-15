@@ -32,4 +32,8 @@ describe "YARD::TypeInference::Processor" do
   describe "cvars and ivars" do
     check_file_inline_type_annotations(:inferencer_008_cvars_ivars, __FILE__)
   end
+
+  describe "instance methods called externally" do
+    check_file_inline_type_annotations(:inferencer_009_external_imethods, __FILE__)
+  end
 end
