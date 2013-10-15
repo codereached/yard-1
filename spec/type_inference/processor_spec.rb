@@ -28,4 +28,8 @@ describe "YARD::TypeInference::Processor" do
   describe "constructor with args" do
     check_file_inline_type_annotations(:inferencer_007_ctr_args, __FILE__)
   end
+
+  describe "cvars and ivars" do
+    check_file_inline_type_annotations(:inferencer_008_cvars_ivars, __FILE__)
+  end
 end

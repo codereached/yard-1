@@ -103,6 +103,10 @@ module YARD::TypeInference
      YARD::Registry.abstract_value(ast_node)
     end
 
+    def process_cvar(ast_node)
+     YARD::Registry.abstract_value(ast_node)
+    end
+
     def process_kw(ast_node)
      YARD::Registry.abstract_value(ast_node)
     end
