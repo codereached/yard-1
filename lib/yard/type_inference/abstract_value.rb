@@ -1,5 +1,5 @@
-MAX_FORWARD = 2
-MAX_DEPTH = 35
+MAX_FORWARD = 10
+MAX_DEPTH = 75
 
 module YARD::TypeInference
   class AbstractValue
