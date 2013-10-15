@@ -163,6 +163,16 @@ module YARD::TypeInference
         mtype = MethodType.new(method_obj.namespace, :class, :new, method_obj)
         mtype.return_type.add_type(InstanceType.new(method_obj.namespace))
         method_av.add_type(mtype)
+
+        # if klass.new doesn't exist but klass#initialize does, then update ref
+        # that we emitted in reference_handlers.rb to point to klass#initialize.
+        if method_obj.is_a?(YARD::CodeObjects::Proxy)
+          initialize_method = Registry.resolve(method_obj.namespace, "#initialize", true)
+          if initialize_method.is_a?(YARD::CodeObjects::MethodObject)
+            YARD::Registry.delete_reference(YARD::CodeObjects::Reference.new(method_obj, ast_node[2], false))
+            YARD::CodeObjects::Reference.new(initialize_method, ast_node[2])
+          end
+        end
       else
         # couldn't determine method, use inferred types
         method_name = ast_node[2].source

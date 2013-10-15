@@ -156,6 +156,7 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
 
     {
       'Z#f' => 4,
+      'Z#initialize' => 3,
     }.each do |path, num_refs|
       it "should get #{num_refs} reference to #{path}" do
         Registry.references_to(path).length.should == num_refs

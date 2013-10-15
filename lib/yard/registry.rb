@@ -185,6 +185,12 @@ module YARD
         end
       end
 
+      def delete_reference(ref)
+        refs = @references[ref.target.path]
+        return if !refs
+        refs.delete(ref)
+      end
+
       attr_reader :references
 
       def references_to(target)
