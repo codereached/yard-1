@@ -439,8 +439,6 @@ module YARD
       def add_reference(*refs)
         refs.flatten.each do |ref|
           next unless ref.is_a?(CodeObjects::Reference) || ref.is_a?(CodeObjects::Proxy)
-          ensure_loaded!(ref.target)
-          yield(object) if block_given?
         end
         refs.size == 1 ? refs.first : refs
       end
