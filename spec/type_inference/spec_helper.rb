@@ -32,7 +32,7 @@ def check_file_inline_type_annotations(file, thisfile = __FILE__, log_level = lo
         end
       end
     end
-    each_comment_with_prefix("ideant ", lines) do |line, type_string, lineno|
+    each_comment_with_prefix("ident ", lines) do |line, type_string, lineno|
       enum = p.enumerator
       enum.each do |topnode|
         topnode.traverse do |node|
