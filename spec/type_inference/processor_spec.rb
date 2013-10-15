@@ -24,4 +24,8 @@ describe "YARD::TypeInference::Processor" do
   describe "instance method with args" do
     check_file_inline_type_annotations(:inferencer_006_imethod_args, __FILE__)
   end
+
+  describe "constructor with args" do
+    check_file_inline_type_annotations(:inferencer_007_ctr_args, __FILE__)
+  end
 end
