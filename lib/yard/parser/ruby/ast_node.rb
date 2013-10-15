@@ -73,8 +73,9 @@ module YARD
 
         # @return [String] the filename the node was parsed from
         def file
-          return parent.file if parent && parent != self
-          @file
+          @file ||= if parent && parent != self
+            parent.file
+          end
         end
 
         # @return [String] the full source that the node was parsed from
