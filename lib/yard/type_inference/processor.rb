@@ -167,7 +167,7 @@ module YARD::TypeInference
         # if klass.new doesn't exist but klass#initialize does, then update ref
         # that we emitted in reference_handlers.rb to point to klass#initialize.
         if method_obj.is_a?(YARD::CodeObjects::Proxy)
-          initialize_method = Registry.resolve(method_obj.namespace, "#initialize", true)
+          initialize_method = YARD::Registry.resolve(method_obj.namespace, "#initialize", true)
           if initialize_method.is_a?(YARD::CodeObjects::MethodObject)
             YARD::Registry.delete_reference(YARD::CodeObjects::Reference.new(method_obj, ast_node[2], false))
             YARD::CodeObjects::Reference.new(initialize_method, ast_node[2])
