@@ -141,14 +141,10 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
     before(:all) { parse_file :reference_handler_007_ivars_cvars, __FILE__ }
 
     {
-      'A#@iv1' => 3,
-      "A::@cv1" => 3,
+      'A::@iv1' => 3,
+      "A::@@cv1" => 3,
     }.each do |path, num_refs|
       it "should get #{num_refs} reference to #{path}" do
-         puts Registry.paths.join("\n")
-         puts "--###--"
-        puts Registry.references.values.flatten.map(&:target).join("\n")
-         puts "=================="
         Registry.references_to(path).length.should == num_refs
       end
     end
