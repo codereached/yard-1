@@ -35,6 +35,7 @@ module YARD
 
         parse_files(*args) unless args.empty?
 
+        YARD::Registry.clear
         YARD.parse(self.files, [])
         TypeInference::Processor.new.process_ast_list(YARD::Registry.ast)
         true
