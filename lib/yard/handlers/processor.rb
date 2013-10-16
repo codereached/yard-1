@@ -1,4 +1,5 @@
 require 'ostruct'
+require 'pathname'
 
 module YARD
   module Handlers
