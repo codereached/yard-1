@@ -11,7 +11,7 @@ PATH_ORDER = [
   'lib/yard/generators/base.rb',
   'lib/yard/generators/method_listing_generator.rb',
   'lib/yard/serializers/base.rb',
-  'lib/**/*.rb'
+  'lib/yard/code_objects/**/*.rb'
 ]
 
 Benchmark.bmbm do |x|
