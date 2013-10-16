@@ -436,12 +436,7 @@ module YARD
         objects.size == 1 ? objects.first : objects
       end
 
-      def add_reference(*refs)
-        refs.flatten.each do |ref|
-          next unless ref.is_a?(CodeObjects::Reference) || ref.is_a?(CodeObjects::Proxy)
-        end
-        refs.size == 1 ? refs.first : refs
-      end
+      def add_reference(ref); end
 
       # Ensures that the object's namespace is loaded before attaching it
       # to the namespace.
