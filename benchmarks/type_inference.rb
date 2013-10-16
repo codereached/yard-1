@@ -1,6 +1,7 @@
 require "benchmark"
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'yard'))
 require 'logger'
+require 'ruby-prof'
 
 PATH_ORDER = [
   'lib/yard/autoload.rb',
@@ -14,10 +15,18 @@ PATH_ORDER = [
   'lib/yard/code_objects/**/*.rb'
 ]
 
-Benchmark.bmbm do |x|
+YARD::Registry.clear
+YARD.parse PATH_ORDER, [], Logger::ERROR
+
+RubyProf.start
+
+Benchmark.bm do |x|
   x.report("infer types") do
-    YARD::Registry.clear
-    YARD.parse PATH_ORDER, [], Logger::ERROR
     YARD::TypeInference::Processor.new.process_ast_list(YARD::Registry.ast)
   end
 end
+
+result = RubyProf.stop
+
+printer = RubyProf::FlatPrinter.new(result)
+printer.print(File.open("prof.out", "w"))
