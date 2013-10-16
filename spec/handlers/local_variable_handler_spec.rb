@@ -4,7 +4,6 @@ describe "YARD::Handlers::Ruby::LocalVariableHandler" do
   before(:all) { parse_file :local_variable_handler_001, __FILE__ }
 
   it "should parse local variables at the top level" do
-    puts Registry.paths.join("\n")
     obj = Registry.at("file:spec/handlers/examples/local_variable_handler_001.rb.txt_local_0>somevar")
     obj.source.should == "somevar = \"top level\""
     obj.rhs.source.should == '"top level"'
