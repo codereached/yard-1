@@ -496,7 +496,7 @@ module YARD
       # @since 0.8.0
       def register_group(object, group = extra_state.group)
         if group
-          unless object.namespace.is_a?(Proxy)
+          unless object.namespace.is_a?(Proxy) || object.namespace.is_a?(LocalScope)
             object.namespace.groups |= [group]
           end
           object.group = group

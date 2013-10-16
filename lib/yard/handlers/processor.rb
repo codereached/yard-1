@@ -102,7 +102,8 @@ module YARD
         @scope = :instance
         @self_binding = :instance
         @owner = @namespace
-        relfile = Pathname.new(@file).relative_path_from(Pathname.getwd).to_s
+        filepath = Pathname.new(@file)
+        relfile = filepath.absolute? ? filepath.relative_path_from(Pathname.getwd).to_s : filepath
         @local_scope = @namespace.new_local_scope("file:#{relfile}", @namespace)
         @parser_type = parser.parser_type
         @handlers_loaded = {}
