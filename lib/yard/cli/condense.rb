@@ -34,6 +34,7 @@ module YARD
         parse_options(opts, args)
 
         parse_files(*args) unless args.empty?
+        Registry.load! if use_cache
 
         YARD::Registry.clear
         YARD.parse(self.files, [])
