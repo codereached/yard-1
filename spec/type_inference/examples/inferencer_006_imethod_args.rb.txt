@@ -10,4 +10,4 @@ a.g(3) #: ::Fixnum#
 
 # failing: TODO(sqs)
 a1 = A.new
-a1.g(3) #: ::Fixnum#
+a1.g(3) #TODO(sqs): ::Fixnum#
