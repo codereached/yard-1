@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe "YARD::TypeInference::AbstractValue" do
   before(:each) do
     @av = AbstractValue.new
-    @type = Type.new
+    @type = InstanceType.new("Qux")
   end
 
   describe "adding types" do
@@ -43,7 +43,7 @@ describe "YARD::TypeInference::AbstractValue" do
       @av.add_type(@type)
       @av.propagate(av2)
       @av.propagate(av2)
-      type2 = Type.new
+      type2 = InstanceType.new("Foo")
       @av.add_type(type2)
       av2.types.should == [@type, type2]
     end
