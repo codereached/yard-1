@@ -13,7 +13,13 @@ module YARD::TypeInference
 
     alias process_list process_ast_list
 
+    @@i = 0
     def process_ast_node(ast_node)
+      if @@i % 500 == 0
+        log.warn "Type inference: processing #{ast_node.type} at #{ast_node.file} line #{ast_node.line_range} (#{@@i} nodes seen)"
+      end
+      @@i += 1
+
       raise ArgumentError, "invalid ast node: #{ast_node}" unless ast_node.is_a?(YARD::Parser::Ruby::AstNode)
 
       method_name = "process_#{ast_node.type}"
