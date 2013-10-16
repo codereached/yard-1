@@ -241,6 +241,8 @@ module YARD
         raise ArgumentError, "invalid expr: #{expr}" unless expr.is_a?(YARD::TypeInference::Expr)
         @typed_exprs ||= []
         @typed_exprs << expr
+        @typed_exprs_by_ast_node ||= {}
+        @typed_exprs_by_object ||= {}
         @typed_exprs_by_ast_node[_ast_key_with_type(expr.ast_node)] = expr if expr.is_a?(YARD::TypeInference::AnonymousExpr)
         @typed_exprs_by_object[expr.object.path] = expr if expr.is_a?(YARD::TypeInference::ObjectExpr)
       end
