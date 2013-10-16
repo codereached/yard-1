@@ -32,8 +32,18 @@ module YARD
     def get(key)
       key = :root if key == ''
       key = key.to_sym
-      @store[key]
-      # !(sqs) removed disk writing code
+      return @store[key] if @store[key]
+      return if @loaded_objects >= @available_objects
+
+      # check disk
+      return if @notfound[key]
+      if obj = @serializer.deserialize(key)
+        @loaded_objects += 1
+        put(key, obj)
+      else
+        @notfound[key] = true
+        nil
+      end
     end
 
     # Associates an object with a path
@@ -160,7 +170,6 @@ module YARD
     # @param [String, nil] file if supplied, the name of the file to save to
     # @return [Boolean] whether the database was saved
     def save(merge = true, file = nil)
-      raise NotImplementedError
       if file && file != @file
         @file = file
         @serializer = Serializers::YardocSerializer.new(@file)
