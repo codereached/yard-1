@@ -170,6 +170,9 @@ module YARD::TypeInference
     alias process_break process_nil_control_flow_kw
     alias process_next process_nil_control_flow_kw
 
+    # TODO(sqs): kind of a stretch to call this a control flow kw
+    alias process_undef process_nil_control_flow_kw
+
     def process_rescue(node)
       # TODO(sqs): this is not comprehensive
       process_ast_node(node[2])
