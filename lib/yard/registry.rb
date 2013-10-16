@@ -241,6 +241,8 @@ module YARD
         raise ArgumentError, "invalid expr: #{expr}" unless expr.is_a?(YARD::TypeInference::Expr)
         @typed_exprs ||= []
         @typed_exprs << expr
+        @typed_exprs_by_ast_node[_ast_key_with_type(expr.ast_node)] = expr if expr.is_a?(YARD::TypeInference::AnonymousExpr)
+        @typed_exprs_by_object[expr.object.path] = expr if expr.is_a?(YARD::TypeInference::ObjectExpr)
       end
 
       def abstract_value_for_ast_node(ast_node, resolve = true)
@@ -248,17 +250,21 @@ module YARD
         if obj
           abstract_value_for_object(obj)
         else
-          tx = @typed_exprs.find do |expr|
-            expr.is_a?(YARD::TypeInference::AnonymousExpr) && expr.ast_node == ast_node && expr.ast_node.source_range == ast_node.source_range && expr.ast_node.file == ast_node.file
-          end || (x = YARD::TypeInference::AnonymousExpr.new(ast_node, nil); @typed_exprs << x; x)
+          tx = @typed_exprs_by_ast_node[_ast_key_with_type(ast_node)]
+          if !tx
+            tx = YARD::TypeInference::AnonymousExpr.new(ast_node, nil)
+            add_typed_expr(tx)
+          end
           tx.abstract_value
         end
       end
 
       def abstract_value_for_object(object)
-        tx = @typed_exprs.find do |expr|
-          expr.is_a?(YARD::TypeInference::ObjectExpr) && expr.object.path == object.path
-        end || (x = YARD::TypeInference::ObjectExpr.new(object, nil); @typed_exprs << x; x)
+        tx = @typed_exprs_by_object[object.path]
+        if !tx
+          tx = YARD::TypeInference::ObjectExpr.new(object, nil)
+          add_typed_expr(tx)
+        end
         tx.abstract_value
       end
 
@@ -292,6 +298,8 @@ module YARD
         @ast = []
         @references = {}
         @typed_exprs = []
+        @typed_exprs_by_object = {}
+        @typed_exprs_by_ast_node = {}
         self.thread_local_store = RegistryStore.new
       end
 
