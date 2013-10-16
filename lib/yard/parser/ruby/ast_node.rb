@@ -196,7 +196,7 @@ module YARD
 
         # @return [Array<AstNode>] the {AstNode} children inside the node
         def children
-          @children ||= select {|e| AstNode === e }
+          @children ||= select {|e| e.is_a?(AstNode) }
         end
 
         # Traverses the object and yields each node (including descendants) in order.
