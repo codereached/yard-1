@@ -45,10 +45,8 @@ module YARD::Handlers::Ruby::ReferenceHandlers
       name_node = statement[1]
       parse_block(qualifier)
 
-      target = YARD::Registry.resolve(namespace, statement.path.join(NSEP))
-      if target
-        add_reference Reference.new(target, name_node)
-      end
+      target = P(namespace, statement.path.join(NSEP))
+      add_reference Reference.new(target, name_node)
     end
   end
 
@@ -69,10 +67,8 @@ module YARD::Handlers::Ruby::ReferenceHandlers
     process do
       name_node = statement[0]
       method_name = '#' + name_node[0]
-      target = YARD::Registry.resolve(namespace, method_name, false, true)
-      if target
-        add_reference Reference.new(target, name_node)
-      end
+      target = P(namespace, method_name)
+      add_reference Reference.new(target, name_node)
     end
   end
 
@@ -116,7 +112,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
       if recv_object && recv_object.is_a?(NamespaceObject)
         method_name = statement.method_name(true)
         method_name = meth_type == :instance ? "##{method_name}" : ".#{method_name}"
-        target = YARD::Registry.resolve(recv_object, method_name, true, true)
+        target = P(recv_object, method_name)
         add_reference Reference.new(target, statement.method_name)
       end
     end
@@ -132,7 +128,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
       if name_node.type == :ident
         method_name = name_node[0]
         method_name = self_binding == :instance ? "##{method_name}" : ".#{method_name}"
-        method_object = YARD::Registry.resolve(namespace, method_name, true, true)
+        method_object = P(namespace, method_name)
         if method_object
           add_reference Reference.new(method_object, name_node)
         end
