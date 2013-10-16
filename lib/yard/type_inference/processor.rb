@@ -8,7 +8,7 @@ module YARD::TypeInference
     def process_ast_list(ast)
       ast.map do |ast_node|
         process_ast_node(ast_node) if ast_node.is_a?(YARD::Parser::Ruby::AstNode)
-      end.last
+      end.last if ast
     end
 
     alias process_list process_ast_list
@@ -81,6 +81,8 @@ module YARD::TypeInference
 
     def process_def(ast_node)
       method_obj = YARD::Registry.get_object_for_ast_node(ast_node)
+      return YARD::Registry.abstract_value(ast_node) if !method_obj
+
       method_type = Type.from_object(method_obj)
 
       body_av = process_ast_node(ast_node[2]) # def body
@@ -380,7 +382,8 @@ module YARD::TypeInference
                  elsif v[0] == "nil"
                    AbstractValue.nil_type
                  else
-                   raise "unknown keyword: #{v.source}"
+                   log.warn "unknown keyword: #{v.source} at #{ast_node.file} lines #{ast_node.line_range} (assuming string type)"
+                   AbstractValue.single_type(InstanceType.new("::String"))
                  end
                else
                  process_ast_node(v) or raise "no obj for #{ast_node[0].source}"
@@ -404,8 +407,8 @@ module YARD::TypeInference
       av = YARD::Registry.abstract_value_for_ast_node(ast_node, false)
 
       method_av = process_ast_node(ast_node[0])
-      method_av.types.each do |mtype|
-        mtype.return_type.propagate(av)
+      method_av.types.each do |t|
+        t.return_type.propagate(av) if t.is_a?(MethodType) && t.return_type
       end
 
       av
