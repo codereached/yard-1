@@ -179,7 +179,7 @@ module YARD
 
       def add_reference(ref)
         @references ||= {}
-        @astnode_uniq ||= {}
+        @ref_by_ast_node ||= {}
         @references[ref.target.path] ||= []
         if ensure_ref_unique(ref)
           @references[ref.target.path] << ref
@@ -190,7 +190,7 @@ module YARD
         refs = @references[ref.target.path]
         return if !refs
         refs.delete(ref)
-        @astnode_uniq.delete(_ast_key(ref.ast_node))
+        @ref_by_ast_node.delete(_ast_key_with_type(ref.ast_node))
       end
 
       attr_reader :references
@@ -202,26 +202,29 @@ module YARD
         @references[target] || []
       end
 
-      def _ast_key(astnode)
+      def _ast_key_with_type(astnode)
         "#{astnode.file}:#{astnode.type}:#{astnode.source_range}"
       end
 
+      def _ast_key(astnode)
+        "#{astnode.file}:#{astnode.source_range}"
+      end
+
       def ensure_ref_unique(ref, should_raise=false)
-        key = _ast_key(ref.ast_node)
-        if @astnode_uniq[key]
+        key = _ast_key_with_type(ref.ast_node)
+        if @ref_by_ast_node[key]
             if should_raise
               raise "2 refs with same AST node: #{r.inspect} #{ref.inspect} (source range: #{r.ast_node.source_range} #{ref.ast_node.source_range})"
             end
           return false
         end
-        @astnode_uniq[key] = true
+        @ref_by_ast_node[key] = ref
+        @ref_by_ast_node[_ast_key(ref.ast_node)] = ref
         true
       end
 
       def get_object_for_ast_node(ast_node)
-        ref = @references.values.flatten.find do |r|
-          r.ast_node.file == ast_node.file && r.ast_node.source_range == ast_node.source_range
-        end
+        ref = @ref_by_ast_node[_ast_key(ast_node)]
         if ref
           return ref.target
         end

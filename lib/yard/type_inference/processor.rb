@@ -37,7 +37,12 @@ module YARD::TypeInference
       end
 
       @started[ast_node] = true
-      @memo[ast_node] = send(method_name, ast_node)
+      @memo[ast_node] = begin
+                          send(method_name, ast_node)
+                        rescue
+                          log.warn "Type inference exception on AST node #{ast_node.type} at #{ast_node.file} line #{ast_node.line_range} (chars #{ast_node.source_range}), continuing"
+                          YARD::Registry.abstract_value(ast_node)
+                        end
     end
 
     def process_assign(ast_node)
@@ -94,6 +99,8 @@ module YARD::TypeInference
 
     def process_defs(ast_node)
       method_obj = YARD::Registry.get_object_for_ast_node(ast_node)
+      return YARD::Registry.abstract_value(ast_node) if !method_obj
+
       method_type = Type.from_object(method_obj)
 
       body_av = process_ast_node(ast_node[4]) # def body
@@ -383,7 +390,7 @@ module YARD::TypeInference
                    AbstractValue.nil_type
                  else
                    log.warn "unknown keyword: #{v.source} at #{ast_node.file} lines #{ast_node.line_range} (assuming string type)"
-                   AbstractValue.single_type(InstanceType.new("::String"))
+                   AbstractValue.single_type_nonconst(InstanceType.new("::String"))
                  end
                else
                  process_ast_node(v) or raise "no obj for #{ast_node[0].source}"
@@ -395,7 +402,7 @@ module YARD::TypeInference
 
     def process_const(ast_node)
       av = YARD::Registry.abstract_value(ast_node)
-      av.constant = true
+      # av.constant = true # TODO(sqs): only warn, since you can reassign consts in ruby
       obj = YARD::Registry.get_object_for_ast_node(ast_node)
       if obj && obj.is_a?(YARD::CodeObjects::ClassObject)
         av.add_type(Type.from_object(obj))
