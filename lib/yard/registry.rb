@@ -269,6 +269,13 @@ module YARD
         end
       end
 
+      def add_ast(ast_nodes)
+        @ast ||= []
+        @ast += ast_nodes
+      end
+
+      attr_reader :ast
+
       # Deletes an object from the registry
       # @param [CodeObjects::Base] object the object to remove
       # @return [void]
@@ -279,6 +286,7 @@ module YARD
       # Clears the registry
       # @return [void]
       def clear
+        @ast = []
         @references = {}
         @typed_exprs = []
         self.thread_local_store = RegistryStore.new

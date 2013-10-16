@@ -36,6 +36,8 @@ module YARD
         parse_files(*args) unless args.empty?
 
         YARD.parse(self.files, [])
+        TypeInference::Processor.new.process_ast_list(YARD::Registry.ast)
+        true
       end
 
       # Parses the file arguments into Ruby files.

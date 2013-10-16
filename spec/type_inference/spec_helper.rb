@@ -64,7 +64,10 @@ def check_file_inline_type_annotations(file, thisfile = __FILE__, log_level = lo
     end
   end
 
-  before(:all) { parser.parse(path, [], log_level) }
+  before(:all) {
+    parser.parse(path, [], log_level)
+    YARD::TypeInference::Processor.new.process_ast_list(YARD::Registry.ast)
+  }
 end
 
 def each_comment_with_prefix(prefix, file_lines)

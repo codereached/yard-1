@@ -152,7 +152,10 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
   end
 
   describe "type inferenced refs" do
-    before(:all) { parse_file :reference_handler_008_type_inference, __FILE__ }
+    before(:all) do
+      parse_file :reference_handler_008_type_inference, __FILE__
+      YARD::TypeInference::Processor.new.process_ast_list(YARD::Registry.ast)
+    end
 
     {
       'Z#f' => 4,
@@ -165,7 +168,10 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
   end
 
   describe "type inferenced refs to instance methods (009)" do
-    before(:all) { parse_file :reference_handler_009_type_inference_imethods, __FILE__ }
+    before(:all) do
+      parse_file :reference_handler_009_type_inference_imethods, __FILE__
+      YARD::TypeInference::Processor.new.process_ast_list(YARD::Registry.ast)
+    end
 
     {
       'A#im' => 3,

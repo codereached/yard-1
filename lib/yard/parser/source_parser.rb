@@ -489,7 +489,7 @@ module YARD
         return unless @parser.respond_to? :enumerator
         return unless enumerator = @parser.enumerator
         Handlers::Processor.new(self).process(enumerator)
-        TypeInference::Processor.new.process_ast_list(enumerator)
+        YARD::Registry.add_ast(enumerator)
       end
 
       def parser_type=(value)
