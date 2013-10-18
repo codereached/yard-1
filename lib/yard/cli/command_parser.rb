@@ -31,6 +31,7 @@ module YARD
       end
 
       self.commands = SymbolHash[
+        :bundle  => Bundle,
         :config  => Config,
         :condense=> Condense,
         :diff    => Diff,

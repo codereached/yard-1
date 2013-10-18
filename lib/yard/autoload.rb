@@ -3,6 +3,7 @@ def __p(path) File.join(YARD::ROOT, 'yard', *path.split('/')); end
 
 module YARD
   module CLI # Namespace for command-line interface components
+    autoload :Bundle,          __p('cli/bundle')
     autoload :Command,         __p('cli/command')
     autoload :CommandParser,   __p('cli/command_parser')
     autoload :Condense,        __p('cli/condense')

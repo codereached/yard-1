@@ -1,13 +1,14 @@
+require 'bundler'
+
 module YARD
   module CLI
-    # @since 0.6.0
-    class Gems < Command
+    class Bundle < Command
       def initialize
         @rebuild = false
         @gems = []
       end
 
-      def description; "Builds YARD index for gems" end
+      def description; "Builds YARD index for gems in bundle" end
 
       # Runs the commandline utility, parsing arguments and generating
       # YARD indexes for gems.
@@ -29,42 +30,43 @@ module YARD
         @gems.each do |spec|
           ver = "= #{spec.version}"
           dir = Registry.yardoc_file_for_gem(spec.name, ver)
-          if dir && File.directory?(dir) && !@rebuild
-            log.debug "#{spec.name} index already exists at '#{dir}'"
+          yfile = Registry.yardoc_file_for_gem(spec.name, ver, true)
+          if @list
+            puts yfile
+          elsif dir && File.directory?(dir) && !@rebuild
+            log.warn "#{spec.name} index already exists at '#{dir}'"
           else
-            yfile = Registry.yardoc_file_for_gem(spec.name, ver, true)
             next unless yfile
             next unless File.directory?(spec.full_gem_path)
             Registry.clear
             Dir.chdir(spec.full_gem_path)
-            log.info "Building yardoc index for gem: #{spec.full_name}"
+            log.warn "Building yardoc index for gem: #{spec.full_name} in #{yfile}"
             Yardoc.run('--no-stats', '-n', '-b', yfile)
           end
         end
       end
 
       def add_gems(gems)
-        0.step(gems.size - 1, 2) do |index|
-          gem, ver_require = gems[index], gems[index + 1] || ">= 0"
-          specs = Gem.source_index.find_name(gem, ver_require)
-          if specs.empty?
-            log.warn "#{gem} #{ver_require} could not be found in RubyGems index"
-          else
-            @gems += specs
+        specs = Bundler.load.specs
+        gems.each do |gem|
+          s = specs[gem]
+          if s.empty?
+            log.warn "#{gem} could not be found in the Gemfile"
           end
+          @gems += s
         end
       end
 
       # Parses options
       def optparse(*args)
         opts = OptionParser.new
-        opts.banner = 'Usage: yard gems [options] [gem_name [version]]'
+        opts.banner = 'Usage: yard bundle [options] [gem_name]'
         opts.separator ""
         opts.separator "#{description}. If no gem_name is given,"
-        opts.separator "all gems are built."
+        opts.separator "all gem bundle dependencies are built."
         opts.separator ""
-        opts.on('--rebuild', 'Rebuilds index') do
-          @rebuild = true
+        opts.on('--list', 'list yardoc files') do
+          @list = true
         end
 
         common_options(opts)
@@ -75,7 +77,7 @@ module YARD
         if !args.empty? && @gems.empty?
           log.error "No specified gems could be found for command"
         elsif @gems.empty?
-          @gems += Gem.source_index.find_name('') if @gems.empty?
+          @gems += Bundler.load.specs.to_a if @gems.empty?
         end
       end
     end

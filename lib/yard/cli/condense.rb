@@ -10,6 +10,7 @@ module YARD
       def initialize(*args)
         super
         @files = []
+        @load_yardoc_files = []
 
         Logger.instance.io = STDERR
       end
@@ -32,16 +33,44 @@ module YARD
       def parse_arguments(*args)
         opts = OptionParser.new
         opts.banner = "Usage: yard condense [options]"
+        opts.on('--load-yardoc-files FILES', 'load these yardoc files and merge with current registry (provided by `-c` flag)') do |yfiles|
+          @load_yardoc_files = yfiles.split(',')
+        end
         general_options(opts)
         parse_options(opts, args)
 
         Registry.init_type_inference
         YARD::Handlers::Processor.process_references = true
-        YARD::Parser::Ruby::MethodDefinitionNode
 
         parse_files(*args) unless args.empty?
+        log.warn "Loading main yardoc file at #{YARD::Registry.yardoc_file}"
         Registry.load! if use_cache
 
+        Registry.each do |object|
+          object.origin_yardoc_file = YARD::Registry.yardoc_file
+        end
+
+        @load_yardoc_files.each do |yfile|
+          log.warn "Loading yardoc file at #{yfile}"
+          rs = YARD::RegistryStore.new
+          ok = rs.load!(yfile)
+          if not ok
+            log.warn "Failed to load yardoc file at #{yfile}"
+            next
+          end
+          i = 0
+          rs.values.each do |object|
+            object.origin_yardoc_file = yfile
+            YARD::Registry.register(object)
+
+            if i % 100 == 0
+              log.warn " ... Loaded #{i}/#{rs.values.length} objects from aux file #{yfile}"
+            end
+            i += 1
+          end
+          log.warn "Finished loading #{rs.values.length} objects from from aux file #{yfile}"
+        end
+        log.warn "Finished loading from aux yardoc files"
 
         YARD.parse(self.files, [])
         TypeInference::Processor.new.process_ast_list(YARD::Registry.ast)

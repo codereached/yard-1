@@ -61,6 +61,10 @@ module YARD
           :start => ref.ast_node.source_range.first,
           :end => ref.ast_node.source_range.last + 1,
         }
+        begin
+          r[:target_origin_yardoc_file] = ref.target.origin_yardoc_file.to_s
+        rescue
+        end
         r
       end
     end
