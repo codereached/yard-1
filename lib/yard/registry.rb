@@ -294,6 +294,14 @@ module YARD
         thread_local_store.delete(object.path)
       end
 
+      def init_type_inference
+        @ast ||= []
+        @references ||= {}
+        @typed_exprs ||= []
+        @typed_exprs_by_object ||= {}
+        @typed_exprs_by_ast_node ||= {}
+      end
+
       # Clears the registry
       # @return [void]
       def clear

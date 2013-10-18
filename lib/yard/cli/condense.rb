@@ -1,3 +1,5 @@
+require_relative '../parser/ruby/ast_node'
+
 module YARD
   module CLI
     # Condense all objects
@@ -7,7 +9,6 @@ module YARD
 
       def initialize(*args)
         super
-        @serializer = Serializers::JSONSerializer.new
         @files = []
 
         Logger.instance.io = STDERR
@@ -20,6 +21,7 @@ module YARD
       # @return [void]
       def run(*args)
         return unless parse_arguments(*args)
+        @serializer = Serializers::JSONSerializer.new(self.files)
         @serializer.before_serialize
         @serializer.serialize({objects: Registry.all, references: Registry.references})
         @serializer.after_serialize
@@ -33,10 +35,14 @@ module YARD
         general_options(opts)
         parse_options(opts, args)
 
+        Registry.init_type_inference
+        YARD::Handlers::Processor.process_references = true
+        YARD::Parser::Ruby::MethodDefinitionNode
+
         parse_files(*args) unless args.empty?
         Registry.load! if use_cache
 
-        YARD::Registry.clear
+
         YARD.parse(self.files, [])
         TypeInference::Processor.new.process_ast_list(YARD::Registry.ast)
         true

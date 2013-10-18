@@ -1,5 +1,7 @@
 # Handles a local variable
 class YARD::Handlers::Ruby::LocalVariableHandler < YARD::Handlers::Ruby::Base
+  include YARD::Handlers::Ruby::ReferenceHandlers::ReferenceHandler
+
   handles :assign
 
   process do

@@ -418,7 +418,7 @@ module YARD
           @file = File.cleanpath(content)
           content = convert_encoding(File.read_binary(file))
           checksum = Registry.checksum_for(content)
-          return if Registry.checksums[file] == checksum
+          return if Registry.checksums[file] == checksum && !Handlers::Processor.process_references
 
           if Registry.checksums.has_key?(file)
             log.info "File '#{file}' was modified, re-processing..."

@@ -1,6 +1,8 @@
 # Handles references
 module YARD::Handlers::Ruby::ReferenceHandlers
+  module ReferenceHandler; end
   class VarRefHandler < YARD::Handlers::Ruby::Base
+    include ReferenceHandler
     handles :var_ref, :var_field
 
     process do
@@ -25,6 +27,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
   end
 
   class TopConstRefHandler < YARD::Handlers::Ruby::Base
+    include ReferenceHandler
     handles :top_const_ref
 
     process do
@@ -38,6 +41,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
   end
 
   class ConstPathRefHandler < YARD::Handlers::Ruby::Base
+    include ReferenceHandler
     handles :const_path_ref
 
     process do
@@ -51,6 +55,8 @@ module YARD::Handlers::Ruby::ReferenceHandlers
   end
 
   class InheritsRefHandler < YARD::Handlers::Ruby::Base
+    include ReferenceHandler
+
     # matches classes that inherit from another class
     def self.handles?(node)
       node.type == :class && node[1] != nil
@@ -62,6 +68,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
   end
 
   class MethodDefHandler < YARD::Handlers::Ruby::Base
+    include ReferenceHandler
     handles :def
 
     process do
@@ -73,6 +80,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
   end
 
   class MethodDefsHandler < YARD::Handlers::Ruby::Base
+    include ReferenceHandler
     handles :defs
 
     process do
@@ -94,6 +102,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
   end
 
   class CallRefHandler < YARD::Handlers::Ruby::Base
+    include ReferenceHandler
     handles :call
 
     process do
@@ -119,6 +128,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
   end
 
   class VFCallRefHandler < YARD::Handlers::Ruby::Base
+    include ReferenceHandler
     handles :vcall, :fcall
 
     process do
@@ -138,6 +148,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
 
   # NodeTraverser traverses through AST nodes that do not affect the namespace.
   class NodeTraverser < YARD::Handlers::Ruby::Base
+    include ReferenceHandler
     def self.handles?(node)
       ([:params, :list, :command, :command_call, :method_add_arg, :args_add_block, :arg_paren, :paren, :next].include?(node.type) || node.type.to_s.end_with?('_mod', '_literal') || node.class == AstNode || node.class == KeywordNode || node.class == ConditionalNode || node.class == LoopNode || node.class == ParameterNode)
     end

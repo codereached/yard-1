@@ -1,7 +1,11 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe "YARD::Handlers::Ruby::LocalVariableHandler" do
-  before(:all) { parse_file :local_variable_handler_001, __FILE__ }
+  before(:all) {
+    YARD::Handlers::Processor.process_references = true
+    parse_file :local_variable_handler_001, __FILE__
+  }
+  after(:all) { YARD::Handlers::Processor.process_references = false }
 
   it "should parse local variables at the top level" do
     obj = Registry.at("file:spec/handlers/examples/local_variable_handler_001.rb.txt_local_0>somevar")

@@ -11,6 +11,9 @@ def parse_file_and_infer_types(file, thisfile = __FILE__, log_level = log.level,
 end
 
 def check_file_inline_type_annotations(file, thisfile = __FILE__, log_level = log.level, ext = '.rb.txt')
+  before(:all) { YARD::Handlers::Processor.process_references = true }
+  after(:all) { YARD::Handlers::Processor.process_references = false }
+
   before(:all) { Registry.clear }
   path = File.join(File.dirname(thisfile), 'examples', file.to_s + ext)
   parser = YARD::Parser::SourceParser

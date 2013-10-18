@@ -3,6 +3,11 @@ require 'json'
 module YARD
   module Serializers
     class JSONSerializer < Base
+      # only emit symbols and refs defined in these files
+      def initialize(files)
+        @files = files
+      end
+
       def serialize(data)
         data = {
           :objects => data[:objects].select { |o| output_object?(o) }.map { |o| prepare_object(o) },
@@ -16,7 +21,7 @@ module YARD
       end
 
       def output_object?(object)
-        object.parent_module && object.ast_node
+        object.parent_module && object.ast_node && object.ast_node.respond_to?(:source_range) && @files.include?(object.ast_node.file)
       end
 
       def prepare_object(object)
@@ -31,7 +36,11 @@ module YARD
         }
 
         if !object.docstring.empty?
-          o[:docstring] = object.format(:format => :html, :markup => :asciidoc, :template => :sourcegraph)
+          o[:docstring] = begin
+                            object.format(:format => :html, :markup => :asciidoc, :template => :sourcegraph)
+                          rescue
+                            "<!-- doc error -->"
+                          end
         end
 
         case object.type
@@ -42,7 +51,7 @@ module YARD
       end
 
       def output_reference?(ref)
-        true
+        @files.include?(ref.ast_node.file)
       end
 
       def prepare_reference(ref)

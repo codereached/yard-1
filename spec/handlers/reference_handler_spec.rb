@@ -1,6 +1,9 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe "YARD::Handlers::Ruby::ReferenceHandler" do
+  before(:all) { YARD::Handlers::Processor.process_references = true }
+  after(:all) { YARD::Handlers::Processor.process_references = false }
+
   describe "simple" do
     before(:all) { parse_file :reference_handler_001, __FILE__ }
 
