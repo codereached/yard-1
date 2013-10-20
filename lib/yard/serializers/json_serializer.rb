@@ -45,7 +45,7 @@ module YARD
 
         case object.type
         when :method
-          o[:method_data] = {:signature => object.signature.sub('def ', '')}
+          o[:type_expr] = object.signature.sub('def ', '')
         end
         o
       end
