@@ -5,8 +5,7 @@ module YARD::CodeObjects
     # Creates a new local variable object in +local_scope+ with +name+.
     #
     # @see Base.new
-    def initialize(local_scope, name, ast_node, *args, &block)
-      self.ast_node = ast_node
+    def initialize(local_scope, name, *args, &block)
       @local_scope = local_scope
       super(local_scope, name, *args, &block)
     end
