@@ -75,7 +75,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
       name_node = statement[0]
       method_name = '#' + name_node[0]
       target = P(namespace, method_name)
-      add_reference Reference.new(target, name_node)
+      add_reference Reference.new(target, name_node, true, "decl_ident")
     end
   end
 
@@ -97,7 +97,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
       end
 
       mth = P(nobj, statement[2].source)
-      add_reference(Reference.new(mth, statement[2]))
+      add_reference(Reference.new(mth, statement[2], true, "decl_ident"))
     end
   end
 

@@ -57,6 +57,7 @@ module YARD
       def prepare_reference(ref)
         r = {
           :target => ref.target,
+          :kind => ref.kind,
           :file => ref.ast_node.file,
           :start => ref.ast_node.source_range.first,
           :end => ref.ast_node.source_range.last + 1,
