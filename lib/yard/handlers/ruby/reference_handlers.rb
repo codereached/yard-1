@@ -3,7 +3,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
   module ReferenceHandler; end
   class VarRefHandler < YARD::Handlers::Ruby::Base
     include ReferenceHandler
-    handles :var_ref, :var_field
+    handles :const_ref, :var_ref, :var_field
 
     process do
       name_node = statement[0]
@@ -54,16 +54,26 @@ module YARD::Handlers::Ruby::ReferenceHandlers
     end
   end
 
-  class InheritsRefHandler < YARD::Handlers::Ruby::Base
+  class ClassDefHandler < YARD::Handlers::Ruby::Base
     include ReferenceHandler
-
-    # matches classes that inherit from another class
-    def self.handles?(node)
-      node.type == :class && node[1] != nil
-    end
+    handles :class
 
     process do
-      parse_block(statement[1])
+      parse_block(statement[1]) if statement[1] # inherits
+      name_node = statement[0]
+      target = P(namespace, name_node.source)
+      add_reference Reference.new(target, name_node, true, "decl_ident")
+    end
+  end
+
+  class ModuleDefHandler < YARD::Handlers::Ruby::Base
+    include ReferenceHandler
+    handles :module
+
+    process do
+      name_node = statement[0]
+      target = P(namespace, name_node.source)
+      add_reference Reference.new(target, name_node, true, "decl_ident")
     end
   end
 

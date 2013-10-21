@@ -8,35 +8,35 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
     before(:all) { parse_file :reference_handler_001, __FILE__ }
 
     it "should get 2 references to A" do
-      Registry.references_to("A").length.should == 2
+      Registry.references_to("A").length.should == 3
     end
 
     it "should get namespace qualifier reference of A" do
       refs = Registry.references_to("A")
-      refs[0].ast_node.source.should == "A"
-      refs[0].ast_node.source_range.should == (35..35)
+      refs[1].ast_node.source.should == "A"
+      refs[1].ast_node.source_range.should == (35..35)
     end
 
     it "should get top-level reference to A" do
       refs = Registry.references_to("A")
-      refs[1].ast_node.source.should == "A"
-      refs[1].ast_node.source_range.should == (40..40)
+      refs[2].ast_node.source.should == "A"
+      refs[2].ast_node.source_range.should == (40..40)
     end
 
     it "should get 2 references to B" do
-      Registry.references_to("A::B").length.should == 2
+      Registry.references_to("A::B").length.should == 3
     end
 
     it "should get reference to B in module A block" do
       refs = Registry.references_to("A::B")
-      refs[0].ast_node.source.should == "B"
-      refs[0].ast_node.source_range.should == (28..28)
+      refs[1].ast_node.source.should == "B"
+      refs[1].ast_node.source_range.should == (28..28)
     end
 
     it "should get top-level qualified reference to B" do
       refs = Registry.references_to("A::B")
-      refs[1].ast_node.source.should == "B"
-      refs[1].ast_node.source_range.should == (38..38)
+      refs[2].ast_node.source.should == "B"
+      refs[2].ast_node.source_range.should == (38..38)
     end
   end
 
@@ -44,7 +44,7 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
     before(:all) { parse_file :reference_handler_002, __FILE__ }
 
     it "should get 10 references to M1" do
-      Registry.references_to("M1").length.should == 10
+      Registry.references_to("M1").length.should == 11
     end
 
     it "should get 6 references to M1::M2" do
@@ -52,11 +52,11 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
     end
 
     it "should get 4 references to M1::M2::C1" do
-      Registry.references_to("M1::M2::C1").length.should == 4
+      Registry.references_to("M1::M2::C1").length.should == 5
     end
 
     it "should get 2 references to M1::M2::C1::C2" do
-      Registry.references_to("M1::M2::C1::C2").length.should == 2
+      Registry.references_to("M1::M2::C1::C2").length.should == 3
     end
 
     it "should get 3 references to M1::M3" do
@@ -64,7 +64,7 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
     end
 
     it "should get 1 reference to M1::M3::C3" do
-      Registry.references_to("M1::M3::C3").length.should == 1
+      Registry.references_to("M1::M3::C3").length.should == 2
     end
   end
 
@@ -72,7 +72,7 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
     before(:all) { parse_file :reference_handler_003, __FILE__ }
 
     it "should get 6 references to C1" do
-      Registry.references_to("C1").length.should == 6
+      Registry.references_to("C1").length.should == 7
     end
 
     it "should get 3 references to C1.my_class_method" do
@@ -84,7 +84,7 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
     before(:all) { parse_file :reference_handler_004, __FILE__ }
 
     it "should get 36 references to C1" do
-      Registry.references_to("C1").length.should == 36
+      Registry.references_to("C1").length.should == 37
     end
 
     it "should get 4 references to C1#m1" do
@@ -132,7 +132,7 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
     before(:all) { parse_file :reference_handler_006_traverse, __FILE__ }
 
     {
-      "M" => 54, # TODO(sqs): should be 57 but 53 is good enough for now
+      "M" => 55, # TODO(sqs): should be 57 but 53 is good enough for now
     }.each do |path, num_refs|
       it "should get #{num_refs} reference to #{path}" do
         Registry.references_to(path).length.should == num_refs
@@ -192,11 +192,11 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
     end
 
     {
-      'M' => 5,
-      'M::C' => 4,
+      'M' => 6,
+      'M::C' => 5,
       'M::C#im' => 4,
       'M::C.cm' => 4,
-      'M::D' => 4,
+      'M::D' => 5,
       'M::D#initialize' => 2,
       'M::D#im' => 0,
       'M::D.cm' => 0,
