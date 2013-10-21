@@ -45,6 +45,7 @@ module YARD
         parse_files(*args) unless args.empty?
         log.warn "Loading main yardoc file at #{YARD::Registry.yardoc_file}"
         Registry.load! if use_cache
+        Registry.clear if Registry.root.nil?
 
         Registry.each do |object|
           object.origin_yardoc_file = YARD::Registry.yardoc_file

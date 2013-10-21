@@ -85,6 +85,7 @@ module YARD
             end
           end
           statement.source = @content[start..@index]
+          statement.source_range = (start..@index)
           statement.block = stmts
           statement.declaration = decl
         end
@@ -105,6 +106,7 @@ module YARD
             src = @content[start...@index]
             if src && src !~ /\A\s*\Z|\A\}\Z/
               stmt = BodyStatement.new(src, @file, line)
+              stmt.source_range = (start..@index)
               attach_comment(stmt)
               stmts << stmt
             end

@@ -3,6 +3,7 @@ module YARD
     module C
       class Statement
         attr_accessor :source
+        attr_accessor :source_range
         attr_accessor :line
         attr_accessor :file
 

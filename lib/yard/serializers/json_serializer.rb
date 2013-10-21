@@ -21,7 +21,7 @@ module YARD
       end
 
       def output_object?(object)
-        object.parent_module && object.ast_node && object.ast_node.respond_to?(:source_range) && @files.include?(object.ast_node.file)
+        object.parent_module && object.ast_node && @files.include?(object.ast_node.file)
       end
 
       def prepare_object(object)
@@ -31,9 +31,12 @@ module YARD
           :module => object.parent_module,
           :type => object.type,
           :file => object.file,
-          :def_start => object.ast_node.source_range.first,
-          :def_end => object.ast_node.source_range.last + 1,
         }
+
+        if object.ast_node.respond_to?(:source_range) && object.ast_node.source_range
+          o[:def_start] = object.ast_node.source_range.first
+          o[:def_end] = object.ast_node.source_range.last + 1
+        end
 
         if !object.docstring.empty?
           o[:docstring] = begin
@@ -45,7 +48,7 @@ module YARD
 
         case object.type
         when :method
-          o[:type_expr] = object.signature.sub('def ', '')
+          o[:type_expr] = object.signature.sub('def ', '') if object.signature
         end
         o
       end
