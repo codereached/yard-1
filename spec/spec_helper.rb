@@ -38,8 +38,10 @@ end
 
 def parse_file(file, thisfile = __FILE__, log_level = log.level, ext = '.rb.txt')
   Registry.clear
-  path = File.join(File.dirname(thisfile), 'examples', file.to_s + ext)
-  YARD::Parser::SourceParser.parse(path, [], log_level)
+  Array(file).each do |f|
+    path = File.join(File.dirname(thisfile), 'examples', f.to_s + ext)
+    YARD::Parser::SourceParser.parse(path, [], log_level)
+  end
 end
 
 def described_in_docs(klass, meth, file = nil)

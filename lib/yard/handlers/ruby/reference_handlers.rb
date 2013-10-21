@@ -15,7 +15,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
         name.gsub!(/^@+/, '@@') if self_binding == :class
         YARD::Registry.resolve(namespace, name, true, false) || P("#{namespace.path}::#{name}")
       else
-        local_scope.resolve(name) || YARD::Registry.resolve(namespace, name, false, false)
+        local_scope.resolve(name) || YARD::Registry.resolve(namespace, name, true, true)
       end
 
       if target
@@ -121,7 +121,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
       if recv_object && recv_object.is_a?(NamespaceObject)
         method_name = statement.method_name(true)
         method_name = meth_type == :instance ? "##{method_name}" : ".#{method_name}"
-        target = P(recv_object, method_name)
+        target = YARD::Registry.resolve(recv_object, method_name, true, true)
         add_reference Reference.new(target, statement.method_name)
       end
     end
@@ -138,7 +138,7 @@ module YARD::Handlers::Ruby::ReferenceHandlers
       if name_node.type == :ident
         method_name = name_node[0]
         method_name = self_binding == :instance ? "##{method_name}" : ".#{method_name}"
-        method_object = P(namespace, method_name)
+        method_object = YARD::Registry.resolve(namespace, method_name, true, true)
         if method_object
           add_reference Reference.new(method_object, name_node)
         end

@@ -483,6 +483,7 @@ module YARD::TypeInference
     end
 
     def process_command(ast_node)
+      process_ast_list(ast_node.children)
       AbstractValue.nil_type
     end
 

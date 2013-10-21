@@ -184,4 +184,26 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
       end
     end
   end
+
+  describe "multiple files (010)" do
+    before(:all) do
+      parse_file [:reference_handler_010_multi_files_1, :reference_handler_010_multi_files_2], __FILE__
+      YARD::TypeInference::Processor.new.process_ast_list(YARD::Registry.ast)
+    end
+
+    {
+      'M' => 5,
+      'M::C' => 4,
+      'M::C#im' => 4,
+      'M::C.cm' => 4,
+      'M::D' => 4,
+      'M::D#initialize' => 2,
+      'M::D#im' => 0,
+      'M::D.cm' => 0,
+    }.each do |path, num_refs|
+      it "should get #{num_refs} reference to #{path}" do
+        Registry.references_to(path).length.should == num_refs
+      end
+    end
+  end
 end
