@@ -118,7 +118,7 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
       "M1::C1>_local_0>v" => 2,
       "M1::C1>_local_0>#cim1>v" => 2,
       "M1::C1>_local_0>cm1>v" => 2,
-      "M1::C1>_local_0><< self_local_1>v" => 2,
+      "M1::C1>_local_0><< self_local_0>v" => 2,
       "M1>_local_0>#mm1>v" => 2,
       "M1>_local_0>#mm1>#subm1>v" => 2,
     }.each do |path, num_refs|

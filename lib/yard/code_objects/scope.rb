@@ -4,10 +4,14 @@ module YARD::CodeObjects
 
     def new_local_scope(name = "", parent = nil)
       name ||= ""
+      @local_scopes_by_name ||= {}
       @local_scopes ||= []
-      name += "_local_#{@local_scopes.length}"
+      @local_scopes_by_name[name] ||= 0
+      origname = name
+      name += "_local_#{@local_scopes_by_name[name]}"
       ls = LocalScope.new(name, parent)
       @local_scopes << ls
+      @local_scopes_by_name[origname] += 1
       ls
     end
   end
