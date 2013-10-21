@@ -54,12 +54,12 @@ module YARD
       end
 
       def output_reference?(ref)
-        @files.include?(ref.ast_node.file)
+        @files.include?(ref.ast_node.file) && !ref.target.is_a?(YARD::CodeObjects::Proxy)
       end
 
       def prepare_reference(ref)
         r = {
-          :target => ref.target,
+          :target => ref.target.path,
           :kind => ref.kind,
           :file => ref.ast_node.file,
           :start => ref.ast_node.source_range.first,
