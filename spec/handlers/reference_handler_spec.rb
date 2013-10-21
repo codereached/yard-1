@@ -206,4 +206,21 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
       end
     end
   end
+
+  describe "external refs" do
+    before(:all) do
+      YARD::CLI::Condense.new.run("-c", "/home/sqs/.rvm/src/ruby-2.0.0-p247/.yardoc-v1", "/home/sqs/src/sourcegraph/grapher/ruby/yard/spec/handlers/examples/reference_handler_011_external_ref.rb.txt")
+    end
+
+    {
+      'Array' => 1,
+      'IPAddr' => 1,
+      'IPAddr#initialize' => 1,
+      'IPAddr#reverse' => 1,
+    }.each do |path, num_refs|
+      it "should get #{num_refs} reference to #{path}" do
+        Registry.references_to(path).select { |r| not r.target.is_a?(YARD::CodeObjects::Proxy) }.length.should == num_refs
+      end
+    end
+  end if false
 end
