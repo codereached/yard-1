@@ -300,6 +300,8 @@ module YARD
         @typed_exprs ||= []
         @typed_exprs_by_object ||= {}
         @typed_exprs_by_ast_node ||= {}
+        @ref_by_ast_node ||= {}
+        @obj_by_ast_node ||= {}
       end
 
       # Clears the registry
@@ -310,6 +312,8 @@ module YARD
         @typed_exprs = []
         @typed_exprs_by_object = {}
         @typed_exprs_by_ast_node = {}
+        @ref_by_ast_node ||= {}
+        @obj_by_ast_node ||= {}
         self.thread_local_store = RegistryStore.new
       end
 
