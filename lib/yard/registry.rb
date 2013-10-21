@@ -199,7 +199,9 @@ module YARD
         if target.is_a?(CodeObjects::Base)
           target = target.path
         end
-        @references[target] || []
+        (@references[target] || []).select do |r|
+          not r.target.is_a?(YARD::CodeObjects::Proxy)
+        end
       end
 
       def _ast_key_with_type(astnode)
