@@ -228,13 +228,7 @@ module YARD
         if ref
           return ref.target
         end
-        each do |o|
-          next unless o.ast_node
-          if o.ast_node.file == ast_node.file && o.ast_node.source_range == ast_node.source_range
-            return o
-          end
-        end
-        nil
+        @obj_by_ast_node[_ast_key(ast_node)]
       end
 
       def add_typed_expr(expr)
@@ -293,6 +287,8 @@ module YARD
       def delete(object)
         thread_local_store.delete(object.path)
       end
+
+      attr_reader :obj_by_ast_node
 
       def init_type_inference
         @ast ||= []

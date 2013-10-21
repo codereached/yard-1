@@ -526,6 +526,7 @@ module YARD
       # @return [void]
       def register_ast_node(object, ast_node = statement, type = parser.parser_type)
         object.ast_node ||= ast_node
+        YARD::Registry.obj_by_ast_node[YARD::Registry._ast_key(ast_node)] = object
       end
 
       # Registers visibility on a method object. If the object does not
