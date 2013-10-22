@@ -32,7 +32,7 @@ module YARD
           dir = Registry.yardoc_file_for_gem(spec.name, ver)
           yfile = Registry.yardoc_file_for_gem(spec.name, ver, true)
           if @list
-            puts yfile
+            puts "#{spec.name}\t#{yfile}"
           elsif dir && File.directory?(dir) && !@rebuild
             log.warn "#{spec.name} index already exists at '#{dir}'"
           else
