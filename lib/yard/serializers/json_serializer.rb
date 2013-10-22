@@ -40,7 +40,7 @@ module YARD
 
         if !object.docstring.empty?
           o[:docstring] = begin
-                            object.format(:format => :html, :template => :sourcegraph)
+                            object.format(:format => :html, :markup => :asciidoc, :template => :sourcegraph)
                           rescue
                             "<!-- doc error -->"
                           end
