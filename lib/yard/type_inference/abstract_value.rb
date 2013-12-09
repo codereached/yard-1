@@ -14,9 +14,11 @@ module YARD::TypeInference
 
     def add_type(type, _depth = 0)
       raise ArgumentError, "invalid type: #{type}" unless type.is_a?(Type)
-      @types << type unless @types.include?(type)
-      @forward[0..MAX_FORWARD-1].each do |fwd|
-        add_type_to_abstract_value(type, fwd, _depth)
+      if not @types.include?(type)
+        @types << type
+        @forward[0..MAX_FORWARD-1].each do |fwd|
+          add_type_to_abstract_value(type, fwd, _depth)
+        end
       end
     end
 
