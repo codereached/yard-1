@@ -1,11 +1,23 @@
 require 'json'
+require 'pathname'
 
 module YARD
   module Serializers
     class JSONSerializer < Base
       # only emit symbols and refs defined in these files
       def initialize(files)
-        @files = files
+        @files = files.map do |f|
+          f = Pathname.new(f)
+          if f.directory?
+            fs = []
+            f.find { |p|
+              fs << p if p.file?
+            }
+            fs
+          else
+            [f]
+          end
+        end.flatten.map(&:to_s)
       end
 
       def serialize(data)
