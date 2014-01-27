@@ -42,7 +42,7 @@ module YARD
           :module => object.parent_module,
           :kind => object.type,
           :file => object.file,
-          :exported => true,
+          :exported => !object.name.to_s.start_with?('@'),
         }
 
         if object.ast_node.respond_to?(:source_range) && object.ast_node.source_range
