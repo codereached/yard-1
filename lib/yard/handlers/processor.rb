@@ -32,8 +32,6 @@ module YARD
         attr_reader :namespace_for_handler
         undef namespace_for_handler
         def namespace_for_handler; @@parser_type_extensions ||= {} end
-
-        attr_accessor :process_references
       end
 
       register_handler_namespace :ruby, Ruby
@@ -165,7 +163,6 @@ module YARD
         Base.subclasses.find_all do |handler|
           handler_base_class > handler &&
           (handler.namespace_only? ? owner.is_a?(CodeObjects::NamespaceObject) : true) &&
-          (self.class.process_references || !(handler < Ruby::ReferenceHandlers::ReferenceHandler)) &&
           handles?(handler, statement)
         end
       end

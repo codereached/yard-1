@@ -177,105 +177,6 @@ module YARD
         thread_local_store[object.path] = object
       end
 
-      def add_reference(ref)
-        @references ||= {}
-        @ref_by_ast_node ||= {}
-        @references[ref.target.path] ||= []
-        if ensure_ref_unique(ref)
-          @references[ref.target.path] << ref
-        end
-      end
-
-      def delete_reference(ref)
-        refs = @references[ref.target.path]
-        return if !refs
-        refs.delete(ref)
-        @ref_by_ast_node.delete(_ast_key_with_type(ref.ast_node))
-      end
-
-      attr_reader :references
-
-      def references_to(target)
-        if target.is_a?(CodeObjects::Base)
-          target = target.path
-        end
-        (@references[target] || []).select do |r|
-          not r.target.is_a?(YARD::CodeObjects::Proxy)
-        end
-      end
-
-      def _ast_key_with_type(astnode)
-        "#{astnode.file}:#{astnode.type}:#{astnode.source_range}"
-      end
-
-      def _ast_key(astnode)
-        "#{astnode.file}:#{astnode.source_range}"
-      end
-
-      def ensure_ref_unique(ref, should_raise=false)
-        key = _ast_key_with_type(ref.ast_node)
-        if @ref_by_ast_node[key]
-            if should_raise
-              raise "2 refs with same AST node: #{r.inspect} #{ref.inspect} (source range: #{r.ast_node.source_range} #{ref.ast_node.source_range})"
-            end
-          return false
-        end
-        @ref_by_ast_node[key] = ref
-        @ref_by_ast_node[_ast_key(ref.ast_node)] = ref
-        true
-      end
-
-      def get_object_for_ast_node(ast_node)
-        ref = @ref_by_ast_node[_ast_key(ast_node)]
-        if ref
-          return ref.target
-        end
-        @obj_by_ast_node[_ast_key(ast_node)]
-      end
-
-      def add_typed_expr(expr)
-        raise ArgumentError, "invalid expr: #{expr}" unless expr.is_a?(YARD::TypeInference::Expr)
-        @typed_exprs ||= []
-        @typed_exprs << expr
-        @typed_exprs_by_ast_node ||= {}
-        @typed_exprs_by_object ||= {}
-        @typed_exprs_by_ast_node[_ast_key_with_type(expr.ast_node)] = expr if expr.is_a?(YARD::TypeInference::AnonymousExpr)
-        @typed_exprs_by_object[expr.object.path] = expr if expr.is_a?(YARD::TypeInference::ObjectExpr)
-      end
-
-      def abstract_value_for_ast_node(ast_node, resolve = true)
-        obj = get_object_for_ast_node(ast_node) if resolve
-        if obj
-          abstract_value_for_object(obj)
-        else
-          tx = @typed_exprs_by_ast_node[_ast_key_with_type(ast_node)]
-          if !tx
-            tx = YARD::TypeInference::AnonymousExpr.new(ast_node, nil)
-            add_typed_expr(tx)
-          end
-          tx.abstract_value
-        end
-      end
-
-      def abstract_value_for_object(object)
-        tx = @typed_exprs_by_object[object.path]
-        if !tx
-          tx = YARD::TypeInference::ObjectExpr.new(object, nil)
-          add_typed_expr(tx)
-        end
-        tx.abstract_value
-      end
-
-      def abstract_value(object_or_ast_node)
-        if object_or_ast_node.is_a?(CodeObjects::Base)
-          abstract_value_for_object(object_or_ast_node)
-        elsif object_or_ast_node.is_a?(Parser::Ruby::AstNode)
-          abstract_value_for_ast_node(object_or_ast_node)
-        else
-          raise ArgumentError, "invalid object or ast node: #{object_or_ast_node}"
-        end
-      end
-
       def add_ast(ast_nodes)
         @ast ||= []
         @ast += ast_nodes
@@ -290,28 +191,10 @@ module YARD
         thread_local_store.delete(object.path)
       end
 
-      attr_reader :obj_by_ast_node
-
-      def init_type_inference
-        @ast ||= []
-        @references ||= {}
-        @typed_exprs ||= []
-        @typed_exprs_by_object ||= {}
-        @typed_exprs_by_ast_node ||= {}
-        @ref_by_ast_node ||= {}
-        @obj_by_ast_node ||= {}
-      end
-
       # Clears the registry
       # @return [void]
       def clear
         @ast = []
-        @references = {}
-        @typed_exprs = []
-        @typed_exprs_by_object = {}
-        @typed_exprs_by_ast_node = {}
-        @ref_by_ast_node ||= {}
-        @obj_by_ast_node ||= {}
         self.thread_local_store = RegistryStore.new
       end
 

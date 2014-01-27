@@ -36,14 +36,12 @@ module YARD
     autoload :ConstantObject,       __p('code_objects/constant_object')
     autoload :ExtendedMethodObject, __p('code_objects/extended_method_object')
     autoload :ExtraFileObject,      __p('code_objects/extra_file_object')
-    autoload :LocalVariableObject,  __p('code_objects/local_variable_object')
     autoload :MacroObject,          __p('code_objects/macro_object')
     autoload :MethodObject,         __p('code_objects/method_object')
     autoload :ModuleObject,         __p('code_objects/module_object')
     autoload :NamespaceObject,      __p('code_objects/namespace_object')
     autoload :Proxy,                __p('code_objects/proxy')
     autoload :ProxyMethodError,     __p('code_objects/proxy')
-    autoload :Reference,            __p('code_objects/reference')
     autoload :RootObject,           __p('code_objects/root_object')
     autoload :LocalScope,           __p('code_objects/scope')
     autoload :MultipleLocalScopes,  __p('code_objects/scope')
@@ -62,17 +60,6 @@ module YARD
     autoload :ISEPQ,                __p('code_objects/base')
     autoload :CSEP,                 __p('code_objects/base')
     autoload :CSEPQ,                __p('code_objects/base')
-  end
-
-  module TypeInference
-    autoload :Processor, __p('type_inference/processor')
-    autoload :AbstractValue, __p('type_inference/abstract_value')
-    autoload :Type, __p('type_inference/type')
-    autoload :ClassType, __p('type_inference/type')
-    autoload :InstanceType, __p('type_inference/type')
-    autoload :Expr, __p('type_inference/expr')
-    autoload :ObjectExpr, __p('type_inference/expr')
-    autoload :AnonymousExpr, __p('type_inference/expr')
   end
 
   # Handlers are called during the data processing part of YARD's
@@ -136,14 +123,12 @@ module YARD
       autoload :DSLHandlerMethods,        __p('handlers/ruby/dsl_handler_methods')
       autoload :ExceptionHandler,         __p('handlers/ruby/exception_handler')
       autoload :ExtendHandler,            __p('handlers/ruby/extend_handler')
-      autoload :LocalVariableHandler,     __p('handlers/ruby/local_variable_handler')
       autoload :MethodHandler,            __p('handlers/ruby/method_handler')
       autoload :MethodConditionHandler,   __p('handlers/ruby/method_condition_handler')
       autoload :MixinHandler,             __p('handlers/ruby/mixin_handler')
       autoload :ModuleHandler,            __p('handlers/ruby/module_handler')
       autoload :ModuleFunctionHandler,    __p('handlers/ruby/module_function_handler')
       autoload :PrivateConstantHandler,   __p('handlers/ruby/private_constant_handler')
-      autoload :ReferenceHandlers,        __p('handlers/ruby/reference_handlers')
       autoload :StructHandlerMethods,     __p('handlers/ruby/struct_handler_methods')
       autoload :VisibilityHandler,        __p('handlers/ruby/visibility_handler')
       autoload :YieldHandler,             __p('handlers/ruby/yield_handler')

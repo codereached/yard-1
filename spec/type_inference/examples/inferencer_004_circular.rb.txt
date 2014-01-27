@@ -1,6 +1,0 @@
-def f
-  f
-  3
-end
-
-f #TODO(sqs): ::Fixnum#

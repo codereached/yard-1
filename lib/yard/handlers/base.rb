@@ -436,8 +436,6 @@ module YARD
         objects.size == 1 ? objects.first : objects
       end
 
-      def add_reference(ref); end
-
       # Ensures that the object's namespace is loaded before attaching it
       # to the namespace.
       #
@@ -526,9 +524,6 @@ module YARD
       # @return [void]
       def register_ast_node(object, ast_node = statement, type = parser.parser_type)
         object.ast_node ||= ast_node
-        if ast_node.respond_to?(:source_range)
-          YARD::Registry.obj_by_ast_node[YARD::Registry._ast_key(ast_node)] = object
-        end
       end
 
       # Registers visibility on a method object. If the object does not

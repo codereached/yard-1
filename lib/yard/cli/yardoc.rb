@@ -158,8 +158,6 @@ module YARD
       # @return [Boolean] whether objects should be serialized to .yardoc db
       attr_accessor :save_yardoc
 
-      attr_accessor :process_references
-
       # @return [Boolean] whether to generate output
       attr_accessor :generate
 
@@ -204,7 +202,6 @@ module YARD
         @options = YardocOptions.new
         @options.reset_defaults
         @visibilities = [:public]
-        @process_references = false
         @apis = []
         @hidden_apis = []
         @assets = {}
@@ -239,8 +236,6 @@ module YARD
           # fail early if arguments are not valid
           return unless parse_arguments(*args)
         end
-
-        YARD::Handlers::Processor.process_references = self.process_references
 
         checksums = nil
         if use_cache
@@ -542,10 +537,6 @@ module YARD
 
         opts.on('--no-save', 'Do not save the parsed data to the yardoc db') do
           self.save_yardoc = false
-        end
-
-        opts.on('--process-references', 'Process references') do
-          self.process_references = true
         end
 
         opts.on('--exclude REGEXP', 'Ignores a file if it matches path match (regexp)') do |path|
