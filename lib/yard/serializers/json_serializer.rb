@@ -52,8 +52,7 @@ module YARD
 
         if !object.docstring.empty?
           o[:docstring] = begin
-                            # TODO(sqs): remove the ' (from YARD)' before deploying. it's just useful for debugging.
-                            object.format(:format => :html, :markup => :asciidoc, :template => :sourcegraph) + ' (from YARD)'
+                            object.format(:format => :html, :markup => :asciidoc, :template => :sourcegraph)
                           rescue
                             "<!-- doc error -->"
                           end
