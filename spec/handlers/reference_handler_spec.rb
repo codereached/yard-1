@@ -207,6 +207,25 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
     end
   end
 
+  pending "type inferenced refs to module functions (011)" do
+    before(:all) do
+      parse_file :reference_handler_011_type_inference_module_functions, __FILE__
+      YARD::TypeInference::Processor.new.process_ast_list(YARD::Registry.ast)
+    end
+
+    {
+      'A.f' => 2,
+    }.each do |path, num_refs|
+      it "should get #{num_refs} reference to #{path}" do
+        # TODO(sqs): This mimics what Ruby core base64.rb does. We should
+        # resolve the two kinds of refs to module_functions (A.f from anywhere
+        # and A#f from class that mixes-in A) to the same A.f or A#f (not sure
+        # which one is the best to pretend is the canonical one).
+        Registry.references_to(path).length.should == num_refs
+      end
+    end
+  end
+
   describe "external refs" do
     before(:all) do
       YARD::CLI::Condense.new.run("-c", "/home/sqs/.rvm/src/ruby-2.0.0-p247/.yardoc-v1", "/home/sqs/src/sourcegraph/grapher/ruby/yard/spec/handlers/examples/reference_handler_011_external_ref.rb.txt")
