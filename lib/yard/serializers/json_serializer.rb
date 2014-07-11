@@ -64,6 +64,10 @@ module YARD
                           end
         end
 
+        if av = Registry.abstract_value_for_object(object)
+          o[:type_string] = av.type_string
+        end
+
         case object.type
         when :method
           o[:type_expr] = object.signature.sub('def ', '') if object.signature
