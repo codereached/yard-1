@@ -612,7 +612,7 @@ module YARD
         retries = 0
         while object.is_a?(Proxy)
           if retries <= max_retries
-            log.warn "Missing object #{object} in file `#{parser.file}', moving it to the back of the line."
+            log.debug "Missing object #{object} in file `#{parser.file}', moving it to the back of the line."
             parser.parse_remaining_files
           else
             raise NamespaceMissingError, object
