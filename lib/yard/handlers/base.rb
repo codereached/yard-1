@@ -452,13 +452,30 @@ module YARD
         end
       end
 
-      # Registers the file/line of the declaration with the object
+      # Registers the file/line/range of the declaration with the object
       #
       # @param [CodeObjects::Base] object the object to register
       # @return [void]
       # @since 0.8.0
       def register_file_info(object, file = parser.file, line = statement.line, comments = statement.comments)
         object.add_file(file, line, comments)
+        register_c_name_range(object, statement, file)
+      end
+
+      # Registers the name_range for C definitions. We don't have type inference
+      # for C defns, so we don't pick up refs later on. So, emit decl_ident refs
+      # for C defs now. This is called by register_file_info but the values it
+      # sets are later overwritten (for methods only) by register_source, which
+      # calls this method later in the sequence.
+      def register_c_name_range(object, stmt, file = parser.file)
+        if file.end_with? ".c"
+          # Guess the character range of this comment's definition so we can emit it
+          # as a ref later. For Ruby defs, we get refs by walking the AST and
+          # performing type inference, but it's much simpler to just emit this ref
+          # here (because we don't have a C AST, C type inference, etc.).
+          name_start = (stmt.source.index(object.name.to_s) || 23) + stmt.source_range.first
+          object.name_range = (name_start..name_start + object.name.length)
+        end
       end
 
       # Registers any docstring found for the object and expands macros
@@ -520,6 +537,7 @@ module YARD
         return unless object.is_a?(MethodObject)
         object.source ||= source
         object.source_type = type
+        register_c_name_range(object, source, parser.file)
       end
 
       # @param [CodeObjects::Base] object the object to register
