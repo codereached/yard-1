@@ -35,6 +35,20 @@ def check_file_inline_type_annotations(file, thisfile = __FILE__, log_level = lo
         end
       end
     end
+    each_comment_with_prefix("returns ", lines) do |line, return_types, lineno|
+      enum = p.enumerator
+      enum.each do |topnode|
+        topnode.traverse do |node|
+          if node.line_range.last == lineno
+            it "should infer return type of #{node.inspect} (line #{node.line_range}) as #{return_types}" do
+              av = Registry.abstract_value_for_ast_node(node, false)
+              av.return_types.map(&:type_string).join(", ").should == return_types
+            end
+            break
+          end
+        end
+      end
+    end
     each_comment_with_prefix("ident ", lines) do |line, type_string, lineno|
       enum = p.enumerator
       enum.each do |topnode|

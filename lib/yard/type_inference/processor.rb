@@ -6,8 +6,10 @@ module YARD::TypeInference
     end
 
     def process_ast_list(ast)
-      ast.map do |ast_node|
-        process_ast_node(ast_node) if ast_node.is_a?(YARD::Parser::Ruby::AstNode)
+      ast.select do |ast_node|
+        ast_node.is_a?(YARD::Parser::Ruby::AstNode) && !ast_node.is_a?(YARD::Parser::Ruby::CommentNode)
+      end.map do |ast_node|
+        process_ast_node(ast_node)
       end.last if ast
     end
 
@@ -27,22 +29,24 @@ module YARD::TypeInference
         raise ArgumentError, "no #{method_name} processor method - AST node is #{ast_node.inspect} at #{ast_node.file} line #{ast_node.line_range}"
       end
 
+      ast_node_key = YARD::Registry._ast_key_with_type(ast_node)
+
       # handle circular refs
-      if @started[ast_node] && !@memo.include?(ast_node)
+      if @started[ast_node_key] && !@memo.include?(ast_node_key)
         return YARD::Registry.abstract_value_for_ast_node(ast_node, false)
       end
 
-      if @memo.include?(ast_node)
-        return @memo[ast_node]
+      if @memo.include?(ast_node_key)
+        return @memo[ast_node_key]
       end
 
-      @started[ast_node] = true
-      @memo[ast_node] = begin
-                          send(method_name, ast_node)
-                        rescue
-                          log.warn "Type inference exception on AST node #{ast_node.type} at #{ast_node.file} line #{ast_node.line_range} (chars #{ast_node.source_range}), continuing"
-                          YARD::Registry.abstract_value(ast_node)
-                        end
+      @started[ast_node_key] = true
+      @memo[ast_node_key] = begin
+                              send(method_name, ast_node)
+                            rescue
+                              log.warn "Type inference exception on AST node #{ast_node.type} at #{ast_node.file} line #{ast_node.line_range} (chars #{ast_node.source_range}), continuing"
+                              YARD::Registry.abstract_value(ast_node)
+                            end
     end
 
     def process_assign(ast_node)
@@ -94,7 +98,10 @@ module YARD::TypeInference
       if body_av
         body_av.propagate(method_type.return_type)
       end
-      AbstractValue.single_type_nonconst(method_type)
+
+      def_av = YARD::Registry.abstract_value_for_ast_node(ast_node, false)
+      AbstractValue.single_type_nonconst(method_type).propagate(def_av)
+      def_av
     end
 
     def process_defs(ast_node)
@@ -107,7 +114,10 @@ module YARD::TypeInference
       if body_av
         body_av.propagate(method_type.return_type)
       end
-      AbstractValue.single_type_nonconst(method_type)
+
+      def_av = YARD::Registry.abstract_value_for_ast_node(ast_node, false)
+      AbstractValue.single_type_nonconst(method_type).propagate(def_av)
+      def_av
     end
 
     def process_const_path_ref(ast_node)
@@ -453,7 +463,7 @@ module YARD::TypeInference
           # TODO(sqs): add a spec that tests that we add it to Registry.references
           YARD::Registry.add_reference(YARD::CodeObjects::Reference.new(method_obj, ast_node[2]))
         else
-          #log.warn "Couldn't find method_obj for method #{method_name.inspect} in recv #{ast_node[0].inspect[0..40]}"
+          log.warn "Couldn't find method_obj for method #{method_name.inspect} in recv #{ast_node[0].inspect[0..40]}"
         end
       end
 

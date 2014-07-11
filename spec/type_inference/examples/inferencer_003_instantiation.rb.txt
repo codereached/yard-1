@@ -21,5 +21,5 @@ C.new.qux #@ C#qux
 c2 = C.new() #: C#
 c2 #: C#
 c2.qux() #: ::Fixnum#
-C.new() #ident C.new
+C.new() #vcall C.new
 c2.qux #vcall ::Fixnum#

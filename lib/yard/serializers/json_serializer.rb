@@ -66,6 +66,9 @@ module YARD
 
         if av = Registry.abstract_value_for_object(object)
           o[:type_string] = av.type_string
+          if av.respond_to? :return_types
+            o[:return_type] = av.return_types.map(&:type_string).join(", ")
+          end
         end
 
         case object.type

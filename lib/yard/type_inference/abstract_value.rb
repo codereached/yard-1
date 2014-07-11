@@ -47,6 +47,10 @@ module YARD::TypeInference
       @types.map(&:path).join(', ')
     end
 
+    def return_types
+      @types.select { |t| t.is_a? MethodType }.map(&:return_type)
+    end
+
     class << self
       def single_type(type)
         av = AbstractValue.new

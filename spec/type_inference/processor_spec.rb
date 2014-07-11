@@ -40,4 +40,8 @@ describe "YARD::TypeInference::Processor" do
   describe "process all AST nodes" do
     check_file_inline_type_annotations(:inferencer_010_process_ast, __FILE__)
   end
+
+  describe "get method return types" do
+    check_file_inline_type_annotations(:inferencer_011_method_return_types, __FILE__)
+  end
 end
