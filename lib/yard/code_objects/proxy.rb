@@ -16,6 +16,8 @@ module YARD
     # @see Registry.resolve
     # @see ProxyMethodError
     class Proxy
+      include MultipleLocalScopes
+
       def self.===(other) other.is_a?(self) end
 
       attr_reader :namespace
