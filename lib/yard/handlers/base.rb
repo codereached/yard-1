@@ -470,6 +470,8 @@ module YARD
       # overwritten (for methods only) by register_source, which calls this
       # method later in the sequence.
       def register_name_range(object, stmt, file = parser.file)
+        return unless stmt.respond_to? :source_range
+
         # Guess the character range of this definition. This fails for C defns
         # whose name is not included in their rb_* function name, and probably
         # for other things, too. (Like "module A::A"; it'd link the first A, not
