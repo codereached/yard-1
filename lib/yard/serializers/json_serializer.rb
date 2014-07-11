@@ -48,7 +48,7 @@ module YARD
 
         if object.respond_to?(:name_range) && object.name_range
           o[:name_start] = object.name_range.first
-          o[:name_end] = object.name_range.last + 1
+          o[:name_end] = object.name_range.last
         end
 
         if object.ast_node.respond_to?(:source_range) && object.ast_node.source_range
