@@ -2,6 +2,7 @@ module YARD::TypeInference
   class Processor
     def initialize
       @started = {}
+      @namespace = nil
       @memo = {}
     end
 
@@ -71,20 +72,53 @@ module YARD::TypeInference
     end
 
     def process_class(ast_node)
+      object = Registry.get_object_for_ast_node(ast_node)
+      if object
+        outer = @namespace
+        @namespace = object
+      end
+
       bodystmt = ast_node[2]
       process_ast_node(bodystmt)
+
+      if object
+        @namespace = outer
+      end
+
       nil
     end
 
     def process_sclass(ast_node)
+      object = Registry.get_object_for_ast_node(ast_node)
+      if object
+        outer = @namespace
+        @namespace = object
+      end
+
       bodystmt = ast_node[1]
       process_ast_node(bodystmt)
+
+      if object
+        @namespace = outer
+      end
+
       nil
     end
 
     def process_module(ast_node)
+      object = Registry.get_object_for_ast_node(ast_node)
+      if object
+        outer = @namespace
+        @namespace = object
+      end
+
       bodystmt = ast_node[1]
       process_ast_node(bodystmt)
+
+      if object
+        @namespace = outer
+      end
+
       nil
     end
 
@@ -437,7 +471,15 @@ module YARD::TypeInference
 
       method_av = process_ast_node(ast_node[2])
       method_obj = YARD::Registry.get_object_for_ast_node(ast_node[2])
-      if method_obj && method_obj.name == :new && !method_obj.namespace.root?
+
+      # TODO(sqs): need to do multiple passes
+      if not method_obj
+        method_name = ast_node[2].last
+        resolv_namespace = YARD::Registry.get_object_for_ast_node(ast_node[0]) || @namespace
+        method_obj = YARD::Registry.resolve(resolv_namespace, method_name, true, true)
+      end
+
+      if method_obj && method_obj.name.to_s == "new" && !method_obj.namespace.root?
         mtype = MethodType.new(method_obj.namespace, :class, :new, method_obj)
         mtype.return_type.add_type(InstanceType.new(method_obj.namespace))
         method_av.add_type(mtype)

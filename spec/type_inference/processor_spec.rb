@@ -44,4 +44,8 @@ describe "YARD::TypeInference::Processor" do
   describe "get method return types" do
     check_file_inline_type_annotations(:inferencer_011_method_return_types, __FILE__)
   end
+
+  describe "complex propagation" do
+    check_file_inline_type_annotations(:inferencer_012_complex_propagation, __FILE__)
+  end
 end

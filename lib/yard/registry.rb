@@ -225,6 +225,10 @@ module YARD
         true
       end
 
+      # for debugging
+      attr_reader :typed_exprs_by_object
+      attr_reader :typed_exprs_by_ast_node
+
       def get_object_for_ast_node(ast_node)
         ref = @ref_by_ast_node[_ast_key(ast_node)]
         if ref
