@@ -165,7 +165,7 @@ module YARD
         Base.subclasses.find_all do |handler|
           handler_base_class > handler &&
           (handler.namespace_only? ? owner.is_a?(CodeObjects::NamespaceObject) : true) &&
-          (self.class.process_references || !(handler < Ruby::ReferenceHandlers::ReferenceHandler)) &&
+          (self.class.process_references || !(handler.name.include?("ReferenceHandler"))) &&
           handles?(handler, statement)
         end
       end
