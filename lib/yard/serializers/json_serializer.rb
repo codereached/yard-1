@@ -70,7 +70,7 @@ module YARD
 
         case object.type
         when :method
-          o[:type_expr] = object.signature.sub('def ', '') if object.signature
+          o[:signature] = object.signature.sub('def ', '') if object.signature
         end
         o
       end
