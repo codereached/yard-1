@@ -133,6 +133,7 @@ module YARD
         def consume_comment(add_comment = true)
           return(advance) unless nextchar == '*' || nextchar == '/'
           line = @line
+          start = @index
           type = nextchar == '*' ? :multi : :line
           advance(2)
           comment = ""
@@ -145,6 +146,7 @@ module YARD
                   comment << '/'
                   stmt = Comment.new(comment, @file, line)
                   stmt.type = type
+                  stmt.source_range = (start..@index)
                   attach_comment(stmt)
                   @statements << stmt
                 end
@@ -154,6 +156,7 @@ module YARD
               if add_comment
                 stmt = Comment.new(comment[0...-1], @file, line)
                 stmt.type = type
+                stmt.source_range = (start..@index)
                 attach_comment(stmt)
                 @statements << stmt
               end

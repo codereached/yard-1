@@ -46,6 +46,11 @@ module YARD
           :exported => !object.name.to_s.start_with?('@'),
         }
 
+        if object.respond_to?(:name_range) && object.name_range
+          o[:name_start] = object.name_range.first
+          o[:name_end] = object.name_range.last + 1
+        end
+
         if object.ast_node.respond_to?(:source_range) && object.ast_node.source_range
           o[:def_start] = object.ast_node.source_range.first
           o[:def_end] = object.ast_node.source_range.last + 1

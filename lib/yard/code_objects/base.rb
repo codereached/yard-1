@@ -155,6 +155,9 @@ module YARD
       # @since 0.6.0
       attr_accessor :group
 
+      # @return [Range] the range of this object's name in source code (for C overridden comment definitions only)
+      attr_accessor :name_range
+
       # Is the object defined conditionally at runtime?
       # @see #dynamic
       def dynamic?; @dynamic end
