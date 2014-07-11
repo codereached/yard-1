@@ -13,6 +13,7 @@ module YARD
         @load_yardoc_files = []
 
         Logger.instance.io = STDERR
+        log.show_backtraces = true
       end
 
       # Runs the commandline utility, parsing arguments and displaying an object
