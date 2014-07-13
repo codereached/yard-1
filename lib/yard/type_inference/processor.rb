@@ -201,7 +201,7 @@ module YARD::TypeInference
 
       if if_node.else_block
         else_av = process_ast_node(if_node.else_block)
-        else_av.propagate(av)
+        else_av.propagate(av) if else_av
       end
 
       av
@@ -280,7 +280,7 @@ module YARD::TypeInference
     alias process_until_mod process_loop
 
     def process_case(node)
-      process_ast_node(node[0]) # switch var
+      process_ast_node(node[0]) if node[0] # switch var
       process_ast_node(node[1])
     end
 
@@ -512,7 +512,7 @@ module YARD::TypeInference
             YARD::CodeObjects::Reference.new(initialize_method, ast_node[2])
           end
         end
-      else
+      else if recv_av
         # couldn't determine method, use inferred types
         method_name = ast_node[2].source
         method_obj = recv_av.lookup_method(method_name)
