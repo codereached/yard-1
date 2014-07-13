@@ -56,7 +56,6 @@ module YARD::TypeInference
 
   class MethodType < Type
     def initialize(namespace, method_scope, method_name, method_obj)
-      raise ArgumentError, "invalid namespace: #{namespace}" if namespace && !namespace.is_a?(YARD::CodeObjects::NamespaceObject)
       @namespace = namespace
       @method_scope = method_scope
       @method_name = method_name
