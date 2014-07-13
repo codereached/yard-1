@@ -524,7 +524,7 @@ module YARD::TypeInference
           # TODO(sqs): add a spec that tests that we add it to Registry.references
           YARD::Registry.add_reference(YARD::CodeObjects::Reference.new(method_obj, ast_node[2]))
         else
-          log.warn "Couldn't find method_obj for method #{method_name.inspect} in recv #{ast_node[0].inspect[0..40]} (recv AV is #{recv_av.inspect})"
+          #log.warn "Couldn't find method_obj for method #{method_name.inspect} in recv #{ast_node[0].inspect[0..40]} (recv AV is #{recv_av.inspect})"
         end
       end
 
