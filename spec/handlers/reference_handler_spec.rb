@@ -259,4 +259,21 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
       end
     end
   end
+
+  describe "refs to C defs" do
+    before(:all) do
+      parse_files ['reference_handler_013_c_defs.c', 'reference_handler_013_c_defs.rb.txt'], __FILE__
+      YARD::TypeInference::Processor.new.process_ast_list(YARD::Registry.ast)
+    end
+
+    {
+      "String#im" => 1,
+      "String.cm" => 1
+    }.each do |path, num_refs|
+      it "should get #{num_refs} references to #{path}" do
+        Registry.at(path).should_not be_nil
+        Registry.references_to(path).length.should == num_refs
+      end
+    end
+  end
 end

@@ -205,7 +205,12 @@ module YARD
       end
 
       def _ast_key_with_type(astnode)
-        "#{astnode.file}:#{astnode.type}:#{astnode.source_range}"
+        if astnode.is_a?(YARD::Parser::C::ToplevelStatement)
+          type = "C_toplevel"
+        else
+          type = astnode.type
+        end
+        "#{astnode.file}:#{type}:#{astnode.source_range}"
       end
 
       def _ast_key(astnode)
@@ -273,7 +278,7 @@ module YARD
       def abstract_value(object_or_ast_node)
         if object_or_ast_node.is_a?(CodeObjects::Base)
           abstract_value_for_object(object_or_ast_node)
-        elsif object_or_ast_node.is_a?(Parser::Ruby::AstNode)
+        elsif object_or_ast_node.is_a?(Parser::Ruby::AstNode) || object_or_ast_node.is_a?(Parser::C::ToplevelStatement)
           abstract_value_for_ast_node(object_or_ast_node)
         else
           raise ArgumentError, "invalid object or ast node: #{object_or_ast_node}"

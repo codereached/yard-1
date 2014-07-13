@@ -23,9 +23,12 @@ module YARD::TypeInference
       end
       @@i += 1
 
-      raise ArgumentError, "invalid ast node: #{ast_node}" unless ast_node.is_a?(YARD::Parser::Ruby::AstNode)
+      if ast_node.is_a?(YARD::Parser::C::ToplevelStatement)
+        method_name = "process_C_toplevel"
+      else
+        method_name = "process_#{ast_node.type}"
+      end
 
-      method_name = "process_#{ast_node.type}"
       if not respond_to?(method_name)
         raise ArgumentError, "no #{method_name} processor method - AST node is #{ast_node.inspect} at #{ast_node.file} line #{ast_node.line_range}"
       end
@@ -45,7 +48,7 @@ module YARD::TypeInference
       @memo[ast_node_key] = begin
                               send(method_name, ast_node)
                             rescue Exception => ex
-                              log.warn "Type inference exception on AST node #{ast_node.type} at #{ast_node.file} line #{ast_node.line_range} (chars #{ast_node.source_range}), continuing"
+                              log.warn "Type inference exception on AST node #{ast_node} at #{ast_node.file} line #{ast_node.line_range} (chars #{ast_node.source_range}), continuing"
                               if log.show_backtraces
                                 log.warn ex.to_s
                                 log.warn ex.backtrace.join("\n")
@@ -561,6 +564,10 @@ module YARD::TypeInference
 
     def process_registry
       # TODO
+    end
+
+    def process_C_toplevel(ast_node)
+      process_ident(ast_node)
     end
   end
 end

@@ -44,6 +44,14 @@ def parse_file(file, thisfile = __FILE__, log_level = log.level, ext = '.rb.txt'
   end
 end
 
+def parse_files(files, thisfile = __FILE__, log_level = log.level)
+  Registry.clear
+  Array(files).each do |f|
+    path = File.join(File.dirname(thisfile), 'examples', f.to_s)
+    YARD::Parser::SourceParser.parse(path, [], log_level)
+  end
+end
+
 def described_in_docs(klass, meth, file = nil)
   YARD::Tags::Library.define_tag "RSpec Specification", :it, :with_raw_title_and_text
 

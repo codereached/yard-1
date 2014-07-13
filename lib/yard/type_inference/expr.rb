@@ -22,7 +22,7 @@ module YARD::TypeInference
 
   class AnonymousExpr < Expr
     def initialize(ast_node, scope)
-      raise ArgumentError, "invalid ast_node: #{ast_node}" unless ast_node.is_a?(YARD::Parser::Ruby::AstNode)
+      raise ArgumentError, "invalid ast_node: #{ast_node}" unless ast_node.is_a?(YARD::Parser::Ruby::AstNode) || ast_node.is_a?(YARD::Parser::C::ToplevelStatement)
       super(ast_node, scope)
     end
 
