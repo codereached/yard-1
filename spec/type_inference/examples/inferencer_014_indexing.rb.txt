@@ -1,0 +1,3 @@
+array = ["a", "b", "c"]
+
+b = array[0] #: String#
