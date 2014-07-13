@@ -244,4 +244,19 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
   end if false
 
   pending "refs to method params"
+
+  pending "refs to subclassed methods" do
+    before(:all) { parse_file :reference_handler_012_subclasses, __FILE__ }
+
+    # TODO(sqs): refs to C::D#im are getting tagged as refs to C#im for some reason.
+    {
+      'C#im' => 2,
+      "C::D#im" => 2,
+    }.each do |path, num_refs|
+      it "should get #{num_refs} references to #{path}" do
+        Registry.at(path).should_not be_nil
+        Registry.references_to(path).length.should == num_refs
+      end
+    end
+  end
 end
