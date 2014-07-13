@@ -44,8 +44,12 @@ module YARD::TypeInference
       @started[ast_node_key] = true
       @memo[ast_node_key] = begin
                               send(method_name, ast_node)
-                            rescue
+                            rescue Exception => ex
                               log.warn "Type inference exception on AST node #{ast_node.type} at #{ast_node.file} line #{ast_node.line_range} (chars #{ast_node.source_range}), continuing"
+                              if log.show_backtraces
+                                log.warn ex.to_s
+                                log.warn ex.backtrace.join("\n")
+                              end
                               YARD::Registry.abstract_value(ast_node)
                             end
     end
