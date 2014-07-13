@@ -242,4 +242,6 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
       end
     end
   end if false
+
+  pending "refs to method params"
 end
