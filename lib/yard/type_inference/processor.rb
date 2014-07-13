@@ -512,7 +512,7 @@ module YARD::TypeInference
             YARD::CodeObjects::Reference.new(initialize_method, ast_node[2])
           end
         end
-      else if recv_av
+      elsif recv_av
         # couldn't determine method, use inferred types
         method_name = ast_node[2].source
         method_obj = recv_av.lookup_method(method_name)
