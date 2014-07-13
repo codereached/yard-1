@@ -26,4 +26,4 @@ A.a #: B#
 
 B.new.b #: C#
 
-A.a.b.c #: ::String#
+A.a.b.c #: String#

@@ -133,4 +133,4 @@ f &foo
 # would fail.
 
 a = 3
-a #: ::Fixnum#
+a #: Fixnum#

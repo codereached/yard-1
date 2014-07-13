@@ -6,8 +6,8 @@ class A
 end
 
 a = A.new #: A#
-a.g(3) #: ::Fixnum#
+a.g(3) #: Fixnum#
 
 # failing: TODO(sqs)
 a1 = A.new
-a1.g(3) #TODO(sqs): ::Fixnum#
+a1.g(3) #TODO(sqs): Fixnum#

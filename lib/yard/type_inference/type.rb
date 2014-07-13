@@ -28,13 +28,19 @@ module YARD::TypeInference
   class ClassType < Type
     def initialize(klass)
       super
+      if klass.is_a?(String)
+        resolved = YARD::Registry.resolve(:root, klass, false, true)
+        if resolved
+          klass = resolved
+        end
+      end
       @klass = klass
     end
 
     attr_reader :klass
 
     def path
-      if klass.is_a?(YARD::CodeObjects::Base)
+      if klass.is_a?(YARD::CodeObjects::Base) || klass.is_a?(YARD::CodeObjects::Proxy)
         klass.path
       else
         klass

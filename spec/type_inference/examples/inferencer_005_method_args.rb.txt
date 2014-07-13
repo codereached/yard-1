@@ -3,5 +3,5 @@ def g(a)
   3
 end
 
-g(7) #: ::Fixnum#
+g(7) #: Fixnum#
 g(7) #ident #g

@@ -7,6 +7,6 @@ end
 class B
   def foo
     a = A.new #: A#
-    a.im #: ::Fixnum#
+    a.im #: Fixnum#
   end
 end

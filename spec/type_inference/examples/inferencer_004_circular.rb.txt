@@ -3,4 +3,4 @@ def f
   3
 end
 
-f #TODO(sqs): ::Fixnum#
+f #TODO(sqs): Fixnum#

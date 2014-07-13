@@ -1,6 +1,6 @@
 def f1
   3
-end #returns ::Fixnum#
+end #returns Fixnum#
 
 class A;end
 
@@ -23,15 +23,15 @@ def f4
 end #returns A
 
 def f5
-  f1 #vcall ::Fixnum#
-end #returns ::Fixnum#
+  f1 #vcall Fixnum#
+end #returns Fixnum#
 
-f1 #vcall ::Fixnum#
+f1 #vcall Fixnum#
 
 class Z
   def a; 3; end
   def self.z; "s"; end
 end
 
-Z.new.a #: ::Fixnum#
-Z.z #: ::String#
+Z.new.a #: Fixnum#
+Z.z #: String#

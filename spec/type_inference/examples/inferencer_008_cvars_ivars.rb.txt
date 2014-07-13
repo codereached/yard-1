@@ -6,13 +6,13 @@ class A
   end
 
   def im
-    @mystring #: ::String#
-    @mystring2 #: ::String#
+    @mystring #: String#
+    @mystring2 #: String#
   end
 
   def self.cm
-    @@mynum #: ::Fixnum#
-    @@mynum2 #: ::Fixnum#
+    @@mynum #: Fixnum#
+    @@mynum2 #: Fixnum#
   end
 
   @@mynum2 = 9
@@ -29,7 +29,7 @@ class B < A
   end
 
   def self.cm
-    @@mynum #TODO: ::Fixnum#
-    @@mynum2 #TODO: ::Fixnum#
+    @@mynum #TODO: Fixnum#
+    @@mynum2 #TODO: Fixnum#
   end
 end
