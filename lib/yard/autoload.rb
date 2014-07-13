@@ -126,6 +126,7 @@ module YARD
 
       autoload :AliasHandler,             __p('handlers/ruby/alias_handler')
       autoload :AttributeHandler,         __p('handlers/ruby/attribute_handler')
+      autoload :BlockHandler,             __p('handlers/ruby/block_handler')
       autoload :ClassHandler,             __p('handlers/ruby/class_handler')
       autoload :ClassConditionHandler,    __p('handlers/ruby/class_condition_handler')
       autoload :ClassVariableHandler,     __p('handlers/ruby/class_variable_handler')
@@ -142,6 +143,7 @@ module YARD
       autoload :MixinHandler,             __p('handlers/ruby/mixin_handler')
       autoload :ModuleHandler,            __p('handlers/ruby/module_handler')
       autoload :ModuleFunctionHandler,    __p('handlers/ruby/module_function_handler')
+      autoload :ParamHandlerMethods,      __p('handlers/ruby/param_handler_methods')
       autoload :PrivateConstantHandler,   __p('handlers/ruby/private_constant_handler')
       module ReferenceHandlers
         autoload :ReferenceHandler,        __p('handlers/ruby/reference_handlers')

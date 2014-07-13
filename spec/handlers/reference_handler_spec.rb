@@ -132,7 +132,7 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
     before(:all) { parse_file :reference_handler_006_traverse, __FILE__ }
 
     {
-      "M" => 55, # TODO(sqs): should be 57 but 53 is good enough for now
+      "M" => 57,
     }.each do |path, num_refs|
       it "should get #{num_refs} reference to #{path}" do
         Registry.references_to(path).length.should == num_refs
@@ -269,6 +269,24 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
     {
       "String#im" => 1,
       "String.cm" => 1
+    }.each do |path, num_refs|
+      it "should get #{num_refs} references to #{path}" do
+        Registry.at(path).should_not be_nil
+        Registry.references_to(path).length.should == num_refs
+      end
+    end
+  end
+
+
+  describe "block vars" do
+    before(:all) { parse_file :reference_handler_014_block_vars, __FILE__ }
+
+    {
+      # TODO(sqs): for the blockvar declarations, we don't get refs to them. this is because the ReferenceHandlers operate in a separate traversal from the BlockHandler, and so it's hard to know how to traverse into the blocks and generate the local scopes using the same logic in BlockHandler. A better solution would be to emit refs when we encounter them in the normal handler pass, which would mean emitting blockvar decls in the ParameterHandlerMethods handle_params method.
+      "file:spec/handlers/examples/reference_handler_014_block_vars.rb.txt_local_0>x" => 2,
+      "file:spec/handlers/examples/reference_handler_014_block_vars.rb.txt_local_0>y" => 4,
+      "file:spec/handlers/examples/reference_handler_014_block_vars.rb.txt_local_0>@block_local_0>x" => 1,
+      "file:spec/handlers/examples/reference_handler_014_block_vars.rb.txt_local_0>@block_local_1>x" => 1,
     }.each do |path, num_refs|
       it "should get #{num_refs} references to #{path}" do
         Registry.at(path).should_not be_nil

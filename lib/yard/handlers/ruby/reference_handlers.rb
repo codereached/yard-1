@@ -121,6 +121,7 @@ module YARD
           process do
             recv = statement[0]
             parse_block(recv)
+            parse_block(statement.block) if statement.block
 
             next unless recv.ref?
 
@@ -146,6 +147,7 @@ module YARD
 
           process do
             parse_block(statement[1]) if statement[1]
+            parse_block(statement.block) if statement.block
 
             name_node = statement[0]
             if name_node.type == :ident
@@ -163,7 +165,7 @@ module YARD
         class NodeTraverser < YARD::Handlers::Ruby::Base
           include ReferenceHandler
           def self.handles?(node)
-            ([:params, :list, :command, :command_call, :method_add_arg, :args_add_block, :arg_paren, :paren, :next].include?(node.type) || node.type.to_s.end_with?('_mod', '_literal') || node.class == AstNode || node.class == KeywordNode || node.class == ConditionalNode || node.class == LoopNode || node.class == ParameterNode)
+            ([:params, :list, :command, :command_call, :method_add_arg, :args_add_block, :arg_paren, :paren, :next].include?(node.type) || node.type.to_s.end_with?('_mod', '_literal') || node.class == AstNode || node.class == KeywordNode || node.class == ConditionalNode || node.class == LoopNode || node.class == ParameterNode) && (![:do_block, :brace_block].include?(node.type))
           end
 
           process do

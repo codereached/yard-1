@@ -61,7 +61,7 @@ describe "YARD::Handlers::Ruby::LocalVariableHandler" do
     obj.rhs.should == nil
   end
 
-  it "should parse block params" do
+  it "should parse method block params" do
     obj = Registry.at("C>_local_0>#j>a")
     obj.source.should == 'a'
     obj.rhs.should == nil
@@ -71,5 +71,17 @@ describe "YARD::Handlers::Ruby::LocalVariableHandler" do
     obj = Registry.at("file:spec/handlers/examples/local_variable_handler_001.rb.txt_local_0>x")
     obj.source.should == "x = 3"
     obj.rhs.source.should == "3"
+  end
+
+  it "should parse block params (curly brace form)" do
+    obj = Registry.at("file:spec/handlers/examples/local_variable_handler_001.rb.txt_local_0>@block_local_0>p")
+    obj.source.should == "p"
+    obj.rhs.should == nil
+  end
+
+  it "should parse block params (do-end form)" do
+    obj = Registry.at("file:spec/handlers/examples/local_variable_handler_001.rb.txt_local_0>@block_local_1>q")
+    obj.source.should == "q"
+    obj.rhs.should == nil
   end
 end

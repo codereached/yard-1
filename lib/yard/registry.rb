@@ -219,9 +219,9 @@ module YARD
 
       def ensure_ref_unique(ref, should_raise=false)
         key = _ast_key_with_type(ref.ast_node)
-        if @ref_by_ast_node[key]
+        if r = @ref_by_ast_node[key]
             if should_raise
-              raise "2 refs with same AST node: #{r.inspect} #{ref.inspect} (source range: #{r.ast_node.source_range} #{ref.ast_node.source_range})"
+              raise "2 refs with same AST node: #{r.target} and #{ref.target} (source range: #{r.ast_node.source_range} #{ref.ast_node.source_range})"
             end
           return false
         end
