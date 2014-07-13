@@ -76,7 +76,7 @@ module YARD::TypeInference
     end
 
     def process_class(ast_node)
-      object = Registry.get_object_for_ast_node(ast_node)
+      object = YARD::Registry.get_object_for_ast_node(ast_node)
       if object
         outer = @namespace
         @namespace = object
@@ -93,7 +93,7 @@ module YARD::TypeInference
     end
 
     def process_sclass(ast_node)
-      object = Registry.get_object_for_ast_node(ast_node)
+      object = YARD::Registry.get_object_for_ast_node(ast_node)
       if object
         outer = @namespace
         @namespace = object
@@ -110,7 +110,7 @@ module YARD::TypeInference
     end
 
     def process_module(ast_node)
-      object = Registry.get_object_for_ast_node(ast_node)
+      object = YARD::Registry.get_object_for_ast_node(ast_node)
       if object
         outer = @namespace
         @namespace = object
