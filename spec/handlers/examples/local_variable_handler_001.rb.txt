@@ -15,3 +15,11 @@ module A
     end
   end
 end
+
+class C
+  def f(a); end
+  def g(a = "x"); end
+  def h(*a); end
+  def i(**a); end
+  def j(&a); end
+end

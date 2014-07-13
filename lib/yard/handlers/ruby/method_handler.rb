@@ -66,12 +66,53 @@ class YARD::Handlers::Ruby::MethodHandler < YARD::Handlers::Ruby::Base
       end
     end
 
+    body_scope = LocalScope.new(obj.name(true), local_scope)
+
+    # create objects for parameters
+    (statement.parameters.required_params || []).each do |param|
+      register LocalVariableObject.new(body_scope, param.source, param) do |o|
+        o.source = param
+        o.owner = namespace
+      end
+    end
+    (statement.parameters.optional_params || []).each do |param|
+      register LocalVariableObject.new(body_scope, param[0].source, param) do |o|
+        o.source = param
+        o.rhs = param[1]
+        o.owner = namespace
+      end
+    end
+    if splat = statement.parameters.splat_param
+      register LocalVariableObject.new(body_scope, splat.source, splat) do |o|
+        o.source = splat
+        o.owner = namespace
+      end
+    end
+    if keyword = statement.parameters.keyword_param
+      register LocalVariableObject.new(body_scope, keyword.source, keyword) do |o|
+        o.source = keyword
+        o.owner = namespace
+      end
+    end
+    if block = statement.parameters.block_param
+      register LocalVariableObject.new(body_scope, block.source, block) do |o|
+        o.source = block
+        o.owner = namespace
+      end
+    end
+    (statement.parameters.required_end_params || []).each do |param|
+      register LocalVariableObject.new(body_scope, param.source, param) do |o|
+        o.source = param
+        o.owner = namespace
+      end
+    end
+
     block_self_binding = if scope == :class || mscope == :class
                            :class
                            else
                            :instance
                          end
-    parse_block(blk, :owner => obj, :namespace => nobj, :self_binding => block_self_binding, :local_scope => LocalScope.new(obj.name(true), local_scope)) # mainly for yield/exceptions
+    parse_block(blk, :owner => obj, :namespace => nobj, :self_binding => block_self_binding, :local_scope => body_scope) # mainly for yield/exceptions
   end
 
   def format_args

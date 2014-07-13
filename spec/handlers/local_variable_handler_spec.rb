@@ -36,4 +36,34 @@ describe "YARD::Handlers::Ruby::LocalVariableHandler" do
     obj.source.should == "somevar = \"in method\""
     obj.rhs.source.should == '"in method"'
   end
+
+  it "should parse method parameters" do
+    obj = Registry.at("C>_local_0>#f>a")
+    obj.source.should == "a"
+    obj.rhs.should == nil
+  end
+
+  it "should parse optional method parameters" do
+    obj = Registry.at("C>_local_0>#g>a")
+    obj.source.should == 'a = "x"'
+    obj.rhs.source.should == '"x"'
+  end
+
+  it "should parse variable length params" do
+    obj = Registry.at("C>_local_0>#h>a")
+    obj.source.should == 'a'
+    obj.rhs.should == nil
+  end
+
+  it "should parse keyword params (in hash)" do
+    obj = Registry.at("C>_local_0>#i>a")
+    obj.source.should == 'a'
+    obj.rhs.should == nil
+  end
+
+  it "should parse block params" do
+    obj = Registry.at("C>_local_0>#j>a")
+    obj.source.should == 'a'
+    obj.rhs.should == nil
+  end
 end
