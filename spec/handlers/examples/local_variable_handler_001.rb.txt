@@ -31,3 +31,5 @@ if x = 3; x; end
 [1, 2].map do |q|
   puts q
 end
+
+[1, 2].map{ |r,| r}

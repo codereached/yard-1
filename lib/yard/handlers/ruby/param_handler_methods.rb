@@ -16,7 +16,7 @@ module YARD::Handlers::Ruby::ParamHandlerMethods
         o.owner = namespace
       end
     end
-    if splat = params.splat_param && splat.is_a?(YARD::Parser::Ruby::AstNode)
+    if splat = params.splat_param and splat.is_a?(YARD::Parser::Ruby::AstNode)
       register LocalVariableObject.new(body_scope, splat.source, splat) do |o|
         o.source = splat
         o.owner = namespace
