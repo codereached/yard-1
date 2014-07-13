@@ -48,4 +48,8 @@ describe "YARD::TypeInference::Processor" do
   describe "complex propagation" do
     check_file_inline_type_annotations(:inferencer_012_complex_propagation, __FILE__)
   end
+
+  describe "literals" do
+    check_file_inline_type_annotations(:inferencer_013_literals, __FILE__)
+  end
 end
