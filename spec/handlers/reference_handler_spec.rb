@@ -226,22 +226,66 @@ describe "YARD::Handlers::Ruby::ReferenceHandler" do
     end
   end
 
-  describe "external refs" do
+  pending "external refs (stdlib: URI)" do
     before(:all) do
-      YARD::CLI::Condense.new.run("-c", "/home/sqs/.rvm/src/ruby-2.0.0-p247/.yardoc-v1", "/home/sqs/src/sourcegraph/grapher/ruby/yard/spec/handlers/examples/reference_handler_011_external_ref.rb.txt")
+      srcs = Dir[File.join(ENV['RUBY_SRC'], "lib/{uri.rb,uri/{generic,common,http}.rb}")] + ["reference_handler_011_stdlib_uri.rb.txt"]
+      parse_files srcs, __FILE__
+      YARD::TypeInference::Processor.new.process_ast_list(YARD::Registry.ast)
     end
 
     {
-      'Array' => 1,
+      "URI" => 1,
+      "URI.parse" => 1,
+      "URI::Generic#hostname" => 1,
+    }.each do |path, num_refs|
+      it "should get #{num_refs} reference to #{path}" do
+        Registry.references.values.each do |refs|
+          refs.each do |ref|
+            puts "REF #{ref.target}" unless ref.ast_node.file.start_with?(ENV["RUBY_SRC"])
+          end
+        end
+        Registry.references_to(path).select { |r| !r.ast_node.file.start_with?(ENV["RUBY_SRC"]) and not r.target.is_a?(YARD::CodeObjects::Proxy) }.length.should == num_refs
+      end
+    end
+  end if ENV["RUBY_SRC"]
+
+  describe "external refs (stdlib: IPAddr)" do
+    before(:all) do
+      srcs = Dir[File.join(ENV['RUBY_SRC'], "lib/ipaddr.rb")] + ["reference_handler_011_stdlib_ipaddr.rb.txt"]
+      parse_files srcs, __FILE__
+      YARD::TypeInference::Processor.new.process_ast_list(YARD::Registry.ast)
+    end
+
+    {
       'IPAddr' => 1,
       'IPAddr#initialize' => 1,
       'IPAddr#reverse' => 1,
     }.each do |path, num_refs|
       it "should get #{num_refs} reference to #{path}" do
+        Registry.references_to(path).select { |r| !r.ast_node.file.start_with?(ENV["RUBY_SRC"]) and not r.target.is_a?(YARD::CodeObjects::Proxy) }.length.should == num_refs
+      end
+    end
+  end if ENV["RUBY_SRC"]
+
+  describe "external refs (stdlib: core)" do
+    before(:all) do
+      srcs = Dir[File.join(ENV['RUBY_SRC'], "{array,string}.c")] + ["reference_handler_011_stdlib_core.rb.txt"]
+      parse_files srcs, __FILE__
+      YARD::TypeInference::Processor.new.process_ast_list(YARD::Registry.ast)
+    end
+
+    {
+      'Array' => 1,
+      'Array#length' => 1,
+      'String' => 1,
+      'String#length' => 1,
+    }.each do |path, num_refs|
+      it "should get #{num_refs} reference to #{path}" do
+        Registry.at(path).should_not be_nil
         Registry.references_to(path).select { |r| not r.target.is_a?(YARD::CodeObjects::Proxy) }.length.should == num_refs
       end
     end
-  end if false
+  end if ENV["RUBY_SRC"]
 
   pending "refs to method params"
 

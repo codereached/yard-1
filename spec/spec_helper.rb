@@ -46,8 +46,8 @@ end
 
 def parse_files(files, thisfile = __FILE__, log_level = log.level)
   Registry.clear
-  Array(files).each do |f|
-    path = File.join(File.dirname(thisfile), 'examples', f.to_s)
+  Array(files).each do |path|
+    path = File.join(File.dirname(thisfile), 'examples', path.to_s) unless path.start_with?("/")
     YARD::Parser::SourceParser.parse(path, [], log_level)
   end
 end
