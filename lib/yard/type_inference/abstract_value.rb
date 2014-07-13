@@ -1,5 +1,5 @@
 MAX_FORWARD = 10
-MAX_DEPTH = 75
+MAX_DEPTH = 25
 
 module YARD::TypeInference
   class AbstractValue
@@ -75,7 +75,9 @@ module YARD::TypeInference
     def add_type_to_abstract_value(type, aval, _depth = 0)
       raise ArgumentError, "target is constant: #{aval.inspect}" if aval.constant
       if _depth > MAX_DEPTH
-        log.warn "add_type_to_abstract_value MAX_DEPTH exceeded (#{_depth}), not adding type (type = #{type.inspect}, av = #{aval.inspect})"
+        @num_max_depth_errors ||= 0
+        log.warn "add_type_to_abstract_value MAX_DEPTH exceeded (#{_depth}), not adding type" if @num_max_depth_errors < 3
+        @num_max_depth_errors += 1
         return
       end
       aval.add_type(type, _depth + 1)
