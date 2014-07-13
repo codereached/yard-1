@@ -17,3 +17,9 @@ class Hash
 end
 
 g = ({:a => 1}.merge({:b => 2})) #: Hash#
+
+class String; def length; 123; end; end
+h = "abc".length #: Fixnum#
+
+class Array; def length; 123; end; end
+h = "abc".length #: Fixnum#
