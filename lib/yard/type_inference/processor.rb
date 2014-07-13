@@ -302,7 +302,19 @@ module YARD::TypeInference
     end
 
     def process_binary(node)
-      AbstractValue.single_type(InstanceType.new("::TrueClass"))
+      left, right = node[0], node[2]
+      op = node[1]
+
+      left_av = process_ast_node(left)
+      right_av = process_ast_node(right)
+
+      # TODO(sqs): rough heuristic that is wrong in many cases
+      case op.to_s
+      when "&&", "||", "and", "or"
+        AbstractValue.single_type(InstanceType.new("::TrueClass"))
+      else
+        left_av
+      end
     end
 
     def process_unary(node)
