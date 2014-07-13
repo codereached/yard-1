@@ -23,3 +23,5 @@ class C
   def i(**a); end
   def j(&a); end
 end
+
+if x = 3; x; end

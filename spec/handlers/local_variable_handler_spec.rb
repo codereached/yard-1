@@ -66,4 +66,10 @@ describe "YARD::Handlers::Ruby::LocalVariableHandler" do
     obj.source.should == 'a'
     obj.rhs.should == nil
   end
+
+  it "should parse control-flow statement local vars" do
+    obj = Registry.at("file:spec/handlers/examples/local_variable_handler_001.rb.txt_local_0>x")
+    obj.source.should == "x = 3"
+    obj.rhs.source.should == "3"
+  end
 end
