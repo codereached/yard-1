@@ -6,7 +6,7 @@ module YARD::CodeObjects
     # @return [Symbol] the scope
     attr_reader :scope
 
-    attr_reader :local_scope
+    include MultipleLocalScopes
 
     # Whether the object is explicitly defined in source or whether it was
     # inferred by a handler. For instance, attribute methods are generally
