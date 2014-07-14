@@ -17,6 +17,7 @@ PATH_ORDER = [
 
 YARD::Registry.clear
 YARD::Registry.init_type_inference
+YARD::Handlers::Processor.process_references = true
 YARD.parse PATH_ORDER, [], Logger::ERROR
 
 RubyProf.start
