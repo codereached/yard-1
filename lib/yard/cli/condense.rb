@@ -27,6 +27,17 @@ module YARD
         @serializer.before_serialize
         @serializer.serialize({objects: Registry.all, references: Registry.references})
         @serializer.after_serialize
+
+        print_stats
+      end
+
+      def print_stats
+        STDERR.puts "============ STATS ============"
+        STDERR.puts "Objects:    #{Registry.paths.length}"
+
+        resolved_refs = Registry.references.length
+        total_refs = Registry.instance_variable_get('@ref_by_ast_node').keys.length/2
+        STDERR.puts "References: #{resolved_refs} resolved / #{total_refs} total (#{(100*resolved_refs.to_f/total_refs).round(2)}%)"
       end
 
       # Parses commandline options.
