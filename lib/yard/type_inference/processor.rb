@@ -365,7 +365,7 @@ module YARD::TypeInference
 
     def process_array(ast_node)
       # if all array elems are same type, designate array as having elements of that type.
-      types = ast_node[0].map { |n| process_ast_node(n) }.compact.map(&:type_string).uniq
+      types = (ast_node[0] || []).map { |n| process_ast_node(n) }.compact.map(&:type_string).uniq
       AbstractValue.single_type(ArrayInstanceType.new(types.length == 1 ? types[0] : nil))
     end
 

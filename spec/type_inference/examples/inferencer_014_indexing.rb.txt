@@ -7,3 +7,6 @@ c = array2[1] #: Fixnum#
 
 hash1 = {:a => "a", :b => "b"}
 d = hash1[:a] #: String#
+
+array0 = []
+hash0 = {}
