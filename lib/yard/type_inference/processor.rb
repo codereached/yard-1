@@ -359,6 +359,10 @@ module YARD::TypeInference
       AbstractValue.single_type(InstanceType.new("::String"))
     end
 
+    def process_xstring_literal(ast_node)
+      AbstractValue.single_type(InstanceType.new("::String"))
+    end
+
     def process_backref(ast_node)
       # these are in regexps so they are always strings, right?
       AbstractValue.single_type(InstanceType.new("::String"))
