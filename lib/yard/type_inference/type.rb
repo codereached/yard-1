@@ -54,6 +54,25 @@ module YARD::TypeInference
     end
   end
 
+  class ArrayInstanceType < InstanceType
+    def initialize(element_type = nil)
+      @element_type = YARD::Registry.resolve(:root, element_type, false, true)
+      super("::Array")
+    end
+
+    attr_reader :element_type
+  end
+
+  class HashInstanceType < InstanceType
+    def initialize(value_type = nil)
+      @value_type = YARD::Registry.resolve(:root, value_type, false, true)
+      super("::Hash")
+    end
+
+    attr_reader :value_type
+  end
+
+
   class MethodType < Type
     def initialize(namespace, method_scope, method_name, method_obj)
       @namespace = namespace

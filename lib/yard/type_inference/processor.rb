@@ -73,9 +73,15 @@ module YARD::TypeInference
       YARD::Registry.abstract_value(node)
     end
 
-    def process_aref(node)
-      # TODO(sqs)
-      YARD::Registry.abstract_value(node)
+    def process_aref(ast_node)
+      node_av = process_ast_node(ast_node[0])
+      if t = node_av.type and t.is_a?(ArrayInstanceType) and t.element_type
+        AbstractValue.single_type(t.element_type)
+      elsif t = node_av.type and t.is_a?(HashInstanceType) and t.value_type
+        AbstractValue.single_type(t.value_type)
+      else
+        YARD::Registry.abstract_value(ast_node)
+      end
     end
 
     def process_class(ast_node)
@@ -343,7 +349,13 @@ module YARD::TypeInference
     end
 
     def process_hash(ast_node)
-      AbstractValue.single_type(InstanceType.new("::Hash"))
+      # if all values are same type, designate hash as having values of that type.
+      types = ast_node.map { |n| process_ast_node(n) }.compact.map(&:type_string).uniq
+      AbstractValue.single_type(HashInstanceType.new(types.length == 1 ? types[0] : nil))
+    end
+
+    def process_assoc(ast_node)
+      process_ast_node(ast_node[1])
     end
 
     def process_dot2(ast_node)
@@ -352,7 +364,9 @@ module YARD::TypeInference
     alias process_dot3 process_dot2
 
     def process_array(ast_node)
-      AbstractValue.single_type(InstanceType.new("::Array"))
+      # if all array elems are same type, designate array as having elements of that type.
+      types = ast_node[0].map { |n| process_ast_node(n) }.compact.map(&:type_string).uniq
+      AbstractValue.single_type(ArrayInstanceType.new(types.length == 1 ? types[0] : nil))
     end
 
     def process_string_literal(ast_node)

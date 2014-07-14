@@ -53,7 +53,7 @@ describe "YARD::TypeInference::Processor" do
     check_file_inline_type_annotations(:inferencer_013_literals, __FILE__)
   end
 
-  pending "indexing" do
+  describe "indexing" do
     check_file_inline_type_annotations(:inferencer_014_indexing, __FILE__)
   end
 end

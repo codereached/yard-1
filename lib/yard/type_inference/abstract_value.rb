@@ -13,7 +13,7 @@ module YARD::TypeInference
     end
 
     def add_type(type, _depth = 0)
-      raise ArgumentError, "invalid type: #{type}" unless type.is_a?(Type)
+      raise ArgumentError, "invalid type: #{type}" unless type.is_a?(Type) or type.is_a?(YARD::CodeObjects::Proxy)
       @types << type unless @types.include?(type)
       @forward[0..MAX_FORWARD-1].each do |fwd|
         add_type_to_abstract_value(type, fwd, _depth)
@@ -49,6 +49,14 @@ module YARD::TypeInference
 
     def return_types
       @types.select { |t| t.is_a? MethodType }.map(&:return_type)
+    end
+
+    def type(guess = false)
+      if types.length == 0
+        nil
+      elsif types.length == 1 or guess
+        types[0]
+      end
     end
 
     class << self

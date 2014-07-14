@@ -70,6 +70,8 @@ module YARD
     autoload :Type, __p('type_inference/type')
     autoload :ClassType, __p('type_inference/type')
     autoload :InstanceType, __p('type_inference/type')
+    autoload :ArrayInstanceType, __p('type_inference/type')
+    autoload :HashInstanceType, __p('type_inference/type')
     autoload :Expr, __p('type_inference/expr')
     autoload :ObjectExpr, __p('type_inference/expr')
     autoload :AnonymousExpr, __p('type_inference/expr')
