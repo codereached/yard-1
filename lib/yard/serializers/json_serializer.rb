@@ -43,7 +43,7 @@ module YARD
           :module => object.parent_module,
           :type => object.type,
           :file => object.file,
-          :exported => !object.name.to_s.include?('_local_'),
+          :exported => !object.name.to_s.include?('_local_') && !object.name.to_s.include?('@'),
         }
 
         if object.respond_to?(:name_range) && object.name_range
