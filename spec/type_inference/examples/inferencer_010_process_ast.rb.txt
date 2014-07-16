@@ -12,6 +12,8 @@ puts(M => M)
 [].each do |m|
   M
   next(M)
+  n = 3
+  n #ident Fixnum#
 end
 
 def M.f(a=M)
@@ -134,3 +136,13 @@ f &foo
 
 a = 3
 a #: Fixnum#
+
+div id: "main_content_wrapper" do |z|
+  z = 9
+  div id: "main_content" do |y|
+    x = 7
+    x #ident Fixnum#
+    z #ident Fixnum#
+    a #ident Fixnum#
+  end
+end

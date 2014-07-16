@@ -229,6 +229,10 @@ module YARD::TypeInference
       av
     end
 
+    def process_do_block(ast_node)
+      process_ast_node(ast_node[1])
+    end
+
     def process_begin(node)
       # TODO(sqs): this is not comprehensive
       process_ast_node(node[0][0])
@@ -425,10 +429,6 @@ module YARD::TypeInference
       YARD::Registry.abstract_value(ast_node)
     end
 
-    def process_gvar(node)
-      YARD::Registry.abstract_value(node)
-    end
-
     def process_dyna_symbol(node)
       AbstractValue.single_type(InstanceType.new("::Symbol"))
     end
@@ -499,6 +499,11 @@ module YARD::TypeInference
         t.return_type.propagate(av) if t.is_a?(MethodType) && t.return_type
       end
 
+      # process block
+      if ast_node.block
+        process_ast_node(ast_node.block)
+      end
+
       av
     end
 
@@ -553,6 +558,11 @@ module YARD::TypeInference
         end
       end
 
+      # process block
+      if ast_node.block
+        process_ast_node(ast_node.block)
+      end
+
       av
     end
 
@@ -562,6 +572,11 @@ module YARD::TypeInference
       method_av = process_ast_node(ast_node[0])
       method_av.types.each do |t|
         t.return_type.propagate(av) if t.is_a?(MethodType) && t.return_type
+      end
+
+      # process block
+      if ast_node.block
+        process_ast_node(ast_node.block)
       end
 
       av
