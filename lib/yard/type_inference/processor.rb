@@ -378,6 +378,9 @@ module YARD::TypeInference
       AbstractValue.single_type(InstanceType.new("::String"))
     end
 
+    alias process_tstring_content process_string_literal
+    alias process_string_concat process_string_literal
+
     def process_xstring_literal(ast_node)
       AbstractValue.single_type(InstanceType.new("::String"))
     end
