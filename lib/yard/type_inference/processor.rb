@@ -180,7 +180,7 @@ module YARD::TypeInference
     def process_ident(ast_node)
       av = YARD::Registry.abstract_value(ast_node)
       obj = YARD::Registry.get_object_for_ast_node(ast_node)
-      if obj.is_a?(YARD::CodeObjects::MethodObject)
+      if obj.is_a?(YARD::CodeObjects::MethodObject) && obj.ast_node
         method_av = process_ast_node(obj.ast_node)
         method_av.propagate(av)
       end
