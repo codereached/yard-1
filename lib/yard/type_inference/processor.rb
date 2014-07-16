@@ -30,7 +30,7 @@ module YARD::TypeInference
       end
 
       if not respond_to?(method_name)
-        raise ArgumentError, "no #{method_name} processor method - AST node is #{ast_node.inspect} at #{ast_node.file} line #{ast_node.line_range}"
+        raise ArgumentError, "no #{method_name} processor method - AST node is #{ast_node} at #{ast_node.file} line #{ast_node.line_range}"
       end
 
       ast_node_key = YARD::Registry._ast_key_with_type(ast_node)
