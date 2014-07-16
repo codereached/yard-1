@@ -232,6 +232,7 @@ module YARD::TypeInference
     def process_do_block(ast_node)
       process_ast_node(ast_node[1])
     end
+    alias process_brace_block process_do_block
 
     def process_begin(node)
       # TODO(sqs): this is not comprehensive
