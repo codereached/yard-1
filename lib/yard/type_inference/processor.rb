@@ -75,9 +75,9 @@ module YARD::TypeInference
 
     def process_aref(ast_node)
       node_av = process_ast_node(ast_node[0])
-      if t = node_av.type and t.is_a?(ArrayInstanceType) and t.element_type
+      if t = node_av.type and t.is_a?(ArrayInstanceType) and t.has_element_type?
         AbstractValue.single_type(t.element_type)
-      elsif t = node_av.type and t.is_a?(HashInstanceType) and t.value_type
+      elsif t = node_av.type and t.is_a?(HashInstanceType) and t.has_value_type?
         AbstractValue.single_type(t.value_type)
       else
         YARD::Registry.abstract_value(ast_node)

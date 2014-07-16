@@ -61,6 +61,10 @@ module YARD::TypeInference
     end
 
     attr_reader :element_type
+
+    def has_element_type?
+      element_type and !element_type.path.empty?
+    end
   end
 
   class HashInstanceType < InstanceType
@@ -70,6 +74,10 @@ module YARD::TypeInference
     end
 
     attr_reader :value_type
+
+    def has_value_type?
+      value_type and !value_type.path.empty?
+    end
   end
 
 
